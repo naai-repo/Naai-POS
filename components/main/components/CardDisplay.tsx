@@ -10,7 +10,7 @@ const CardDisplay: React.FC<HomeProps> = ({ titles, breadcrumbs }) => {
       <div className="breadcrumbs text-sm font-bold mb-4 h-4">
         <Breadcrumbs>
           {breadcrumbs.map((breadcrumb, index) => {
-            return <BreadcrumbItem key={index} href={breadcrumb.navigate}>{breadcrumb.name}</BreadcrumbItem>;
+            return <BreadcrumbItem key={index} href={breadcrumb.navigate} >{breadcrumb.name}</BreadcrumbItem>;
           })}
         </Breadcrumbs>
       </div>
