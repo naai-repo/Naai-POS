@@ -4,7 +4,7 @@ import { HomeProps } from "@/lib/types";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/breadcrumbs";
 import React from "react";
 
-const CardDisplay: React.FC<HomeProps> = ({ titles, breadcrumbs }) => {
+const CardDisplay: React.FC<HomeProps> = ({ titles, breadcrumbs, selectable=false, extraInfo=[] }) => {
   return (
     <div className="home-parent px-4 py-6 h-2/3">
       <div className="breadcrumbs text-sm font-bold mb-4 h-4">
@@ -16,7 +16,7 @@ const CardDisplay: React.FC<HomeProps> = ({ titles, breadcrumbs }) => {
       </div>
       <div className="title-cards grid grid-cols-auto gap-4 h-[calc(100%-1rem)] overflow-y-auto">
         {titles.map((title, index) => {
-          return <Title_card key={index} title={title} navigate={breadcrumbs[breadcrumbs.length-1].navigate} />;
+          return <Title_card key={index} title={title} navigate={breadcrumbs[breadcrumbs.length-1].navigate} selectable={selectable} serviceDetails={extraInfo[index]}/>;
         })}
       </div>
     </div>

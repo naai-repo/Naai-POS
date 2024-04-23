@@ -1,13 +1,11 @@
-'use client'
 import CardDisplay from "@/components/main/components/CardDisplay";
-import { breadcrumbsAtom } from "@/lib/atoms/breadcrumbs";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+
+const salonId = "65e28c422ebce658ad29fdb0";
 
 async function getServiceCategories(){
   try{
-    const response = await axios.get("https://m.naai.in/partner/service/category/all");
+    const response = await axios.get(`https://m.naai.in/partner/service/category/all?salonId=${salonId}`);
     let data = response.data.data;
     data.sort();
     return data;
@@ -16,26 +14,15 @@ async function getServiceCategories(){
   }
 }
 
-const Page = () => {
-  const [serviceCategories, setServiceCategories] = useState([]);
-  // const serviceCategories = getServiceCategories();
-  const [breadcrumbs, setBreadcrumbs] = useRecoilState(breadcrumbsAtom);
-
-  useEffect(() => {
-    getServiceCategories().then((data) => {
-      setServiceCategories(data);
-    });
-    setBreadcrumbs([
-      { name: "Home", navigate: "/" },
-      { name: "service Categories", navigate: "/services" },
-    ]);
-  }, [])
-
-
+const Page = async () => {
+  const serviceCategories = await getServiceCategories();
   return (
     <CardDisplay
       titles={serviceCategories}
-      breadcrumbs={breadcrumbs}
+      breadcrumbs={[
+        { name: "Home", navigate: "/" },
+        { name: "service Categories", navigate: "/services" },
+      ]}
     />
   );
 };
