@@ -3,6 +3,7 @@ export interface title_cardProps {
   navigate: string;
   selectable?: boolean;
   serviceDetails?: extraInfoProps;
+  displayModal?: boolean;
 }
 
 export interface BreadcrumbsProps {
@@ -35,4 +36,10 @@ export interface HomeProps {
   breadcrumbs: BreadcrumbsProps[];
   selectable?: boolean;
   extraInfo?: extraInfoProps[];
+}
+
+export interface ArtistDisplayProps {
+  name: string;
+  price: number;
+  basePrice: number
 }

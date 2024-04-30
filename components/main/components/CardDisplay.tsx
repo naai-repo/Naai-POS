@@ -4,19 +4,37 @@ import { HomeProps } from "@/lib/types";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/breadcrumbs";
 import React from "react";
 
-const CardDisplay: React.FC<HomeProps> = ({ titles, breadcrumbs, selectable=false, extraInfo=[] }) => {
+const CardDisplay: React.FC<HomeProps> = ({
+  titles,
+  breadcrumbs,
+  selectable = false,
+  extraInfo = [],
+}) => {
   return (
     <div className="home-parent px-4 py-6 h-2/3">
       <div className="breadcrumbs text-sm font-bold mb-4 h-4">
         <Breadcrumbs>
           {breadcrumbs.map((breadcrumb, index) => {
-            return <BreadcrumbItem key={index} href={breadcrumb.navigate} >{breadcrumb.name}</BreadcrumbItem>;
+            return (
+              <BreadcrumbItem key={index} href={breadcrumb.navigate}>
+                {breadcrumb.name}
+              </BreadcrumbItem>
+            );
           })}
         </Breadcrumbs>
       </div>
       <div className="title-cards grid grid-cols-auto gap-4 h-[calc(100%-1rem)] overflow-y-auto">
         {titles.map((title, index) => {
-          return <Title_card key={index} title={title} navigate={breadcrumbs[breadcrumbs.length-1].navigate} selectable={selectable} serviceDetails={extraInfo[index]}/>;
+          return (
+            <Title_card
+              key={index}
+              title={title}
+              navigate={breadcrumbs[breadcrumbs.length - 1].navigate}
+              selectable={selectable}
+              serviceDetails={extraInfo[index]}
+              displayModal={extraInfo[index]?.variables?.length === 0}
+            />
+          );
         })}
       </div>
     </div>

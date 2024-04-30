@@ -41,13 +41,13 @@ const page = async ({ params }: { params: { serviceName: string } }) => {
       titles={data}
       breadcrumbs={[
         { name: "Home", navigate: "/" },
+        { name: "gender", navigate: "/services" },
         { name: "service Categories", navigate: "/services" },
         {
           name: decodeURIComponent(params.serviceName),
           navigate: `/services/${params.serviceName}`,
         },
       ]}
-      selectable={true}
       extraInfo={extraInfo}
     />
   );
