@@ -34,12 +34,18 @@ const getArtistsForService = async (serviceDetails: any) => {
   }
   let data = response.data.artistsProvidingServices;
   data = data.map((e: any) => {
-    let service = e.serviceList.filter((ele : any) => ele.serviceId.toString() === serviceDetails?.serviceId.toString());
+    let service = e.serviceList.filter(
+      (ele: any) =>
+        ele.serviceId.toString() === serviceDetails?.serviceId.toString()
+    );
     let price = service[0].price;
-    if(serviceDetails.variableType){
-      let variable = service[0]?.variables?.filter((ele : any) => ele.variableId.toString() === serviceDetails._id.toString());
-      if(variable?.length > 0){
-        price = variable[0].price
+    if (serviceDetails.variableType) {
+      let variable = service[0]?.variables?.filter(
+        (ele: any) =>
+          ele.variableId.toString() === serviceDetails._id.toString()
+      );
+      if (variable?.length > 0) {
+        price = variable[0].price;
       }
     }
     return {
@@ -106,7 +112,7 @@ const ModalComponent = ({
                     <TableCell className="font-semibold border border-slate-400 odd:bg-slate-200">
                       service title
                     </TableCell>
-                    <TableCell className="font-normal border border-slate-400 odd:bg-slate-200">
+                    <TableCell className="font-normal border border-slate-400">
                       {serviceDetails?.serviceTitle}
                     </TableCell>
                   </TableRow>
@@ -114,7 +120,7 @@ const ModalComponent = ({
                     <TableCell className="font-semibold border border-slate-400 odd:bg-slate-200">
                       Base Price
                     </TableCell>
-                    <TableCell className="font-normal border border-slate-400 odd:bg-slate-200">
+                    <TableCell className="font-normal border border-slate-400 ">
                       {serviceDetails?.cutPrice.toLocaleString(
                         "en-In",
                         currencyOptions
@@ -124,16 +130,25 @@ const ModalComponent = ({
                 </TableBody>
               </Table>
             </div>
-            
-            {artists.map((artist: {
-              artistId: string;
-              artistName: string;
-              rating: number;
-              price: number;
-            }) => (
 
-              <ArtistDisplay key={artist.artistId} name={artist.artistName} price={artist.price} basePrice={serviceDetails.cutPrice}/>
-            ))}
+            {artists.map(
+              (artist: {
+                artistId: string;
+                artistName: string;
+                rating: number;
+                price: number;
+              }) => (
+                <ArtistDisplay
+                  key={artist.artistId}
+                  name={artist.artistName}
+                  price={artist.price}
+                  basePrice={serviceDetails.cutPrice}
+                  serviceId={serviceDetails.serviceId}
+                  variableId={serviceDetails._id === serviceDetails.serviceId ? null : serviceDetails._id}
+                  serviceName={serviceDetails.serviceTitle}
+                />
+              )
+            )}
             {/* <Table
               isStriped
               aria-label="Artist Details Table"
@@ -167,7 +182,7 @@ const Title_card: React.FC<title_cardProps> = ({
   navigate,
   selectable,
   serviceDetails,
-  displayModal
+  displayModal,
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const router = useRouter();
@@ -191,9 +206,7 @@ const Title_card: React.FC<title_cardProps> = ({
     <>
       <div
         className="w-32 h-20 bg-naai-pos-500 flex items-center justify-center rounded-lg capitalize font-medium text-sm cursor-pointer"
-        onClick={
-          selectable || displayModal ? onOpen : handleClick
-        }
+        onClick={selectable || displayModal ? onOpen : handleClick}
       >
         <div className="title">{title}</div>
       </div>
