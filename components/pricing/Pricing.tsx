@@ -2,6 +2,7 @@
 import React from "react";
 import Price_display from "./components/Price_display";
 import { Input } from "@nextui-org/input";
+import ItemsTable from "../tables/ItemsTable";
 
 const CustomerDetail = ({
   detail,
@@ -22,6 +23,7 @@ const Pricing = () => {
   return (
     <div className="h-[calc(100vh-1.5rem)] bg-naai-pos-200 w-[25%] relative">
       <Price_display />
+      <ItemsTable/>
       <div className="w-full bottom-0 absolute p-2">
         <Input
           className="bg-white"

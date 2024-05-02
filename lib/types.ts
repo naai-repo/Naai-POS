@@ -41,7 +41,13 @@ export interface HomeProps {
 export interface ArtistDisplayProps {
   name: string;
   price: number;
-  basePrice: number
+  basePrice: number;
+  serviceId: string;
+  variableId?: string;
+  serviceName: string;
 }
+
+export interface SelectedServicesInterface extends ArtistDisplayProps{}
+
 
 export type genderType = "men" | "women" | "unisex" | undefined;
