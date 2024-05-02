@@ -5,3 +5,4 @@ export enum Urls {
     GetArtistList = `${baseUrl}/appointments/singleArtist/list`,
 }
 
+export const SALONID = "65e28c422ebce658ad29fdb0";

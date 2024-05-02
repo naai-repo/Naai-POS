@@ -19,13 +19,13 @@ import {
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import ArtistDisplay from "../artists/ArtistDisplay";
-import { Urls } from "@/lib/api";
+import { SALONID, Urls } from "@/lib/api";
 
 const getArtistsForService = async (serviceDetails: any) => {
   const response = await axios.post(
     Urls.GetArtistList,
     {
-      salonId: "65e28c422ebce658ad29fdb0",
+      salonId: SALONID,
       services: [serviceDetails?.serviceId.toString()],
     }
   );
@@ -174,6 +174,10 @@ const Title_card: React.FC<title_cardProps> = ({
   const pathname = usePathname();
 
   const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+    if(title.toLowerCase() === "men" || title.toLowerCase() === "women"){
+      router.push(`${pathname}/${title}?gender=${title.toLowerCase()}`);
+      return;
+    }
     if (serviceDetails?.variables.length ?? 0 > 0) {
       router.push(`${pathname}/${title}?service=${serviceDetails?.serviceId}`);
       return;

@@ -43,3 +43,5 @@ export interface ArtistDisplayProps {
   price: number;
   basePrice: number
 }
+
+export type genderType = "men" | "women" | "unisex" | undefined;
