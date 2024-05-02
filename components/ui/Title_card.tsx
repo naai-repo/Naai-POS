@@ -24,7 +24,7 @@ const getArtistsForService = async (serviceDetails: any) => {
     `https://m.naai.in/appointments/singleArtist/list`,
     {
       salonId: "65e28c422ebce658ad29fdb0",
-      services: [serviceDetails.serviceId.toString()],
+      services: [serviceDetails?.serviceId.toString()],
     }
   );
   if (response.status !== 200) {
