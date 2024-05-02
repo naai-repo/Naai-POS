@@ -3,6 +3,7 @@ export interface title_cardProps {
   navigate: string;
   selectable?: boolean;
   serviceDetails?: extraInfoProps;
+  displayModal?: boolean;
 }
 
 export interface BreadcrumbsProps {
@@ -36,3 +37,17 @@ export interface HomeProps {
   selectable?: boolean;
   extraInfo?: extraInfoProps[];
 }
+
+export interface ArtistDisplayProps {
+  name: string;
+  price: number;
+  basePrice: number;
+  serviceId: string;
+  variableId?: string;
+  serviceName: string;
+}
+
+export interface SelectedServicesInterface extends ArtistDisplayProps{}
+
+
+export type genderType = "men" | "women" | "unisex" | undefined;

@@ -1,30 +1,20 @@
+"use client";
 import CardDisplay from "@/components/main/components/CardDisplay";
-import axios from "axios";
+import { breadcrumbsAtom } from "@/lib/atoms/breadcrumbs";
+import React from "react";
+import { useRecoilValue } from "recoil";
 
-const salonId = "65e28c422ebce658ad29fdb0";
-
-async function getServiceCategories(){
-  try{
-    const response = await axios.get(`https://m.naai.in/partner/service/category/all?salonId=${salonId}`);
-    let data = response.data.data;
-    data.sort();
-    return data;
-  }catch(err : any ){
-    console.log(err);
-  }
-}
-
-const Page = async () => {
-  const serviceCategories = await getServiceCategories();
+const Gender = () => {
+  const breadcrumbs = useRecoilValue(breadcrumbsAtom);
   return (
     <CardDisplay
-      titles={serviceCategories}
+      titles={["men", "women"]}
       breadcrumbs={[
         { name: "Home", navigate: "/" },
-        { name: "service Categories", navigate: "/services" },
+        { name: "gender", navigate: "/services" },
       ]}
     />
   );
 };
 
-export default Page;
+export default Gender;
