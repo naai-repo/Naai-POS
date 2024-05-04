@@ -7,7 +7,6 @@ import axios from "axios";
 const salonId = SALONID;
 
 async function getServiceCategories(gender: genderType) {
-  console.log(salonId);
   if(!gender){
     throw new Error("Please select a valid gender")
   }
