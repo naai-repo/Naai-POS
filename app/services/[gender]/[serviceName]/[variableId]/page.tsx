@@ -19,7 +19,6 @@ const getVariablesData = async (serviceId: string) => {
    variable["serviceTitle"] = data.serviceTitle
    variable["cutPrice"] = variable.variableCutPrice
   }
-  console.log(data);
   data.variables.sort((a : any, b : any) => {
     return a.variableName.localeCompare(b.variableName)
   })

@@ -1,8 +1,12 @@
 "use client";
-import React from "react";
+import React, { use, useEffect, useRef } from "react";
 import Price_display from "./components/Price_display";
 import { Input } from "@nextui-org/input";
 import ItemsTable from "../tables/ItemsTable";
+import { useRecoilValue } from "recoil";
+import { pricingAtom } from "@/lib/atoms/pricing";
+
+const PricingInputArray = ["Qty", "Price", "GST", "Disc"];
 
 const CustomerDetail = ({
   detail,
@@ -19,11 +23,48 @@ const CustomerDetail = ({
   );
 };
 
+const PricingInput = ({
+  name,
+  defaultValue,
+}: {
+  name: string;
+  defaultValue: string;
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    let input = inputRef.current;
+    if(input)
+      input.value = defaultValue;
+  },[defaultValue])
+  const handleOnchange = (e: string) => {
+    const input = inputRef.current;
+    if(input)
+      input.value = e;
+  };
+  return (
+    <div className="flex gap-2 items-center">
+      <div>{name}</div>
+      <Input
+        onValueChange={handleOnchange}
+        className="bg-white"
+        classNames={{
+          inputWrapper: "min-h-3",
+          mainWrapper: "h-6",
+        }}
+        ref={inputRef}
+      />
+    </div>
+  );
+};
+
 const Pricing = () => {
+  const pricing = useRecoilValue(pricingAtom);
+  console.log(pricing, "pricing");
+
   return (
     <div className="h-[calc(100vh-1.5rem)] bg-naai-pos-200 w-[25%] relative">
       <Price_display />
-      <ItemsTable/>
+      <ItemsTable />
       <div className="w-full bottom-0 absolute p-2">
         <Input
           className="bg-white"
@@ -40,46 +81,15 @@ const Pricing = () => {
           <CustomerDetail detail="Membership" value="--" />
         </div>
         <div className="grid p-3 grid-rows-2 grid-cols-2 gap-y-2 gap-x-2">
-          <div className="flex gap-2 items-center">
-            <div>Qty.</div>
-            <Input
-              className="bg-white"
-              classNames={{
-                inputWrapper: "min-h-3",
-                mainWrapper: "h-6",
-              }}
+          {PricingInputArray.map((input) => (
+            <PricingInput
+              key={input}
+              name={input}
+              defaultValue={
+                pricing[input as keyof typeof pricing]?.toString() || ""
+              }
             />
-          </div>
-          <div className="flex gap-2 items-center">
-            <div>Price</div>
-            <Input
-              className="bg-white"
-              classNames={{
-                inputWrapper: "min-h-3",
-                mainWrapper: "h-6",
-              }}
-            />
-          </div>
-          <div className="flex gap-2 items-center">
-            <div>GST</div>
-            <Input
-              className="bg-white"
-              classNames={{
-                inputWrapper: "min-h-3",
-                mainWrapper: "h-6",
-              }}
-            />
-          </div>
-          <div className="flex gap-2 items-center">
-            <div>Disc</div>
-            <Input
-              className="bg-white"
-              classNames={{
-                inputWrapper: "min-h-3",
-                mainWrapper: "h-6",
-              }}
-            />
-          </div>
+          ))}
         </div>
       </div>
     </div>

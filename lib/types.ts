@@ -47,7 +47,13 @@ export interface ArtistDisplayProps {
   serviceName: string;
 }
 
-export interface SelectedServicesInterface extends ArtistDisplayProps{}
+export interface PricingAtomInterface {
+  Qty: undefined | number;
+  Price: undefined | number;
+  GST: undefined | number;
+  Disc: undefined | number;
+}
 
+export interface SelectedServicesInterface extends ArtistDisplayProps {}
 
 export type genderType = "men" | "women" | "unisex" | undefined;
