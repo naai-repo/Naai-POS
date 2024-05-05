@@ -33,13 +33,11 @@ const PricingInput = ({
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     let input = inputRef.current;
-    if(input)
-      input.value = defaultValue;
-  },[defaultValue])
+    if (input) input.value = defaultValue;
+  }, [defaultValue]);
   const handleOnchange = (e: string) => {
     const input = inputRef.current;
-    if(input)
-      input.value = e;
+    if (input) input.value = e;
   };
   return (
     <div className="flex gap-2 items-center">
