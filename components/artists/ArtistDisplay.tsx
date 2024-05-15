@@ -11,34 +11,32 @@ const ArtistDisplay: React.FC<ArtistDisplayProps> = ({
   serviceId,
   variableId,
   serviceName,
+  artistId,
 }) => {
   const setSelectedServices = useSetRecoilState(selectedServiceAtom);
   const handleClick = () => {
     setSelectedServices((prev: SelectedServicesInterface[]) => {
-      if (variableId) {
-        return [
-          ...prev,
-          {
-            serviceId: serviceId,
-            variableId: variableId,
-            serviceName: serviceName,
-            name: name,
-            price: price,
-            basePrice: basePrice,
-          },
-        ];
-      } else {
-        return [
-          ...prev,
-          {
-            serviceId: serviceId,
-            serviceName: serviceName,
-            name: name,
-            price: price,
-            basePrice: basePrice,
-          },
-        ];
-      }
+      return prev.some(
+        (item) =>
+          item.serviceId === serviceId &&
+          item.artistId === artistId &&
+          item.variableId === variableId
+      )
+        ? prev
+        : [
+            ...prev,
+            {
+              serviceId,
+              variableId,
+              serviceName,
+              name,
+              price,
+              basePrice,
+              artistId,
+              qty: 1,
+              disc: 0,
+            },
+          ];
     });
   };
   return (

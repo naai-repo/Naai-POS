@@ -31,7 +31,7 @@ const ItemsTable = () => {
       Price: selectedServices[id].price,
       GST: parseFloat((selectedServices[id].price * 0.18).toFixed(2)),
       Disc: 0,
-    })
+    });
   };
   const selectedServices = useRecoilValue(selectedServiceAtom);
   return (
@@ -59,10 +59,16 @@ const ItemsTable = () => {
             return (
               <TableRow key={id} onClick={() => handleRowClick(id)}>
                 <TableCell>{service.serviceName}</TableCell>
-                <TableCell className="flex justify-center">{1}</TableCell>
-                <TableCell>{service.price}</TableCell>
-                <TableCell>{(service.price * 0.18).toFixed(2)}</TableCell>
-                <TableCell>{(service.price * 1.18).toFixed(2)}</TableCell>
+                <TableCell className="flex justify-center">
+                  {service.qty}
+                </TableCell>
+                <TableCell>{service.price * service.qty}</TableCell>
+                <TableCell>
+                  {(service.price * service.qty * 0.18).toFixed(2)}
+                </TableCell>
+                <TableCell>
+                  {(service.price * service.qty * 1.18).toFixed(2)}
+                </TableCell>
               </TableRow>
             );
           })}

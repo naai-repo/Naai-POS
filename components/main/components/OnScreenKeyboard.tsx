@@ -1,10 +1,11 @@
 "use client";
 import { activeInputTagAtom } from "@/lib/atoms/activeInputTag";
 import React, { useEffect, useState } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Delete, X } from "lucide-react";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import { pricingAtom } from "@/lib/atoms/pricing";
+import { selectedTableIndexAtom } from "@/lib/atoms/selectedTableIndex";
 
 const OnScreenKeyboard = () => {
   const keysArr = [
@@ -26,7 +27,8 @@ const OnScreenKeyboard = () => {
   const [activeInputTag, setActiveInputTag] =
     useRecoilState(activeInputTagAtom);
   const setSelectedServices = useSetRecoilState(selectedServiceAtom);
-  const setPricing = useSetRecoilState(pricingAtom);
+  const [pricing, setPricing] = useRecoilState(pricingAtom);
+  const selectedTableIndex = useRecoilValue(selectedTableIndexAtom);
   useEffect(() => {
     const inputs = document.querySelectorAll("input");
     function selectInputTags() {
@@ -50,14 +52,34 @@ const OnScreenKeyboard = () => {
         Disc: undefined,
       });
       return;
+    } else if (value === "update") {
+      setSelectedServices((prev) => {
+        const newSelectedServices = prev.map((item, index) => {
+          if (index === selectedTableIndex) {
+            return {
+              ...item,
+              qty: pricing.Qty ?? 0,
+              price: (pricing.Price ?? item.price) - (pricing.Disc ?? 0),
+              disc: pricing.Disc ?? 0,
+            };
+          }
+          return item;
+        });
+        return newSelectedServices;
+      });
+      return;
     }
     if (activeInputTag) {
       if (value !== "backspace" && value !== "close") {
-        activeInputTag.value += value;
-        activeInputTag.focus();
+        const newVal = activeInputTag.value + value;
+        activeInputTag.value = newVal;
+        // activeInputTag.focus();
+        activeInputTag.blur();
       } else if (value === "backspace") {
         activeInputTag.value = activeInputTag.value.slice(0, -1);
-        activeInputTag.focus();
+        // activeInputTag.focus();
+        activeInputTag.blur();
+
       }
     }
   };
