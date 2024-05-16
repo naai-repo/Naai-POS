@@ -3,8 +3,9 @@ import React, { use, useEffect, useRef } from "react";
 import Price_display from "./components/Price_display";
 import { Input } from "@nextui-org/input";
 import ItemsTable from "../tables/ItemsTable";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { pricingAtom } from "@/lib/atoms/pricing";
+import { input } from "@nextui-org/react";
 
 const PricingInputArray = ["Qty", "Price", "GST", "Disc"];
 
@@ -31,25 +32,46 @@ const PricingInput = ({
   defaultValue: string;
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const setPricing = useSetRecoilState(pricingAtom);
   useEffect(() => {
     let input = inputRef.current;
     if (input) input.value = defaultValue;
   }, [defaultValue]);
-  const handleOnchange = (e: string) => {
-    const input = inputRef.current;
-    if (input) input.value = e;
+  
+  useEffect(() => {
+    console.log("CHECK from useEffect ")
+  }, [inputRef.current?.value])
+
+  const handleOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("CHECK: ");
+    setPricing((prev) => {
+      // console.log(prev, "prev pricing");
+      return {
+        ...prev,
+        [name]: e.target.value,
+      };
+    });
   };
+
+  // const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
+  //   console.log("CHECK from input ");
+  //   setPricing((prev) => {
+  //     // console.log(prev, "prev pricing");
+  //     return {
+  //       ...prev,
+  //       [name]: e.currentTarget.value,
+  //     };
+  //   });
+  // }
+  
   return (
     <div className="flex gap-2 items-center">
-      <div>{name}</div>
-      <Input
-        onValueChange={handleOnchange}
-        className="bg-white"
-        classNames={{
-          inputWrapper: "min-h-3",
-          mainWrapper: "h-6",
-        }}
+      <div className="w-1/4">{name}</div>
+      <input
+        onChange={handleOnchange}
+        // onInputCapture={handleInputChange}
         ref={inputRef}
+        className="w-3/4"
       />
     </div>
   );
@@ -57,8 +79,6 @@ const PricingInput = ({
 
 const Pricing = () => {
   const pricing = useRecoilValue(pricingAtom);
-  console.log(pricing, "pricing");
-
   return (
     <div className="h-[calc(100vh-1.5rem)] bg-naai-pos-200 w-[25%] relative">
       <Price_display align = "right"/>

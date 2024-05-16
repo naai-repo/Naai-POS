@@ -34,6 +34,7 @@ const ItemsTable = () => {
     })
   };
   const selectedServices = useRecoilValue(selectedServiceAtom);
+  console.log("DATA: ", selectedServices);
   return (
     <div className="flex items-start justify-center w-full overflow-auto overflow-y-hidden">
       <Table
@@ -59,10 +60,16 @@ const ItemsTable = () => {
             return (
               <TableRow key={id} onClick={() => handleRowClick(id)}>
                 <TableCell>{service.serviceName}</TableCell>
-                <TableCell className="flex justify-center">{1}</TableCell>
-                <TableCell>{service.price}</TableCell>
-                <TableCell>{(service.price * 0.18).toFixed(2)}</TableCell>
-                <TableCell>{(service.price * 1.18).toFixed(2)}</TableCell>
+                <TableCell className="flex justify-center">
+                  {service.qty}
+                </TableCell>
+                <TableCell>{service.price * service.qty}</TableCell>
+                <TableCell>
+                  {(service.price * service.qty * 0.18).toFixed(2)}
+                </TableCell>
+                <TableCell>
+                  {(service.price * service.qty * 1.18).toFixed(2)}
+                </TableCell>
               </TableRow>
             );
           })}
