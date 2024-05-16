@@ -146,6 +146,7 @@ const ModalComponent = ({
                   serviceId={serviceDetails.serviceId}
                   variableId={serviceDetails._id === serviceDetails.serviceId ? null : serviceDetails._id}
                   serviceName={serviceDetails.serviceTitle}
+                  artistId={artist.artistId}
                 />
               )
             )}

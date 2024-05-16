@@ -7,28 +7,24 @@ import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import { pricingAtom } from "@/lib/atoms/pricing";
 import { selectedTableIndexAtom } from "@/lib/atoms/selectedTableIndex";
 
-const OnScreenKeyboard = () => {
+const OnScreenKeyboardModal = () => {
   const keysArr = [
     "7",
     "8",
     "9",
-    "close",
-    "update",
     "4",
     "5",
     "6",
-    "backspace",
-    "cancel",
     "1",
     "2",
     "3",
+    ".",
     "0",
+    "backspace",
   ];
   const [activeInputTag, setActiveInputTag] =
     useRecoilState(activeInputTagAtom);
   const setSelectedServices = useSetRecoilState(selectedServiceAtom);
-  const [pricing, setPricing] = useRecoilState(pricingAtom);
-  const selectedTableIndex = useRecoilValue(selectedTableIndexAtom);
   useEffect(() => {
     const inputs = document.querySelectorAll("input");
     function selectInputTags() {
@@ -43,37 +39,10 @@ const OnScreenKeyboard = () => {
 
   const handleNumClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const value = e.currentTarget.dataset.key;
-    if (value === "close") {
-      setSelectedServices([]);
-      setPricing({
-        Qty: undefined,
-        Price: undefined,
-        GST: undefined,
-        Disc: undefined,
-      });
-      return;
-    } else if (value === "update") {
-      setSelectedServices((prev) => {
-        const newSelectedServices = prev.map((item, index) => {
-          if (index === selectedTableIndex) {
-            return {
-              ...item,
-              qty: pricing.Qty ?? 0,
-              price: (pricing.Price ?? item.price) - (pricing.Disc ?? 0),
-              disc: pricing.Disc ?? 0,
-            };
-          }
-          return item;
-        });
-        console.log("NEW: ", newSelectedServices);
-        return newSelectedServices;
-      });
-      return;
-    }
-
     if (activeInputTag) {
-      if (value !== "backspace" && value !== "close" && value !== "update" && value !== "cancel") {
+      if (value !== "backspace") {
         activeInputTag.value += value;
+        console.log(activeInputTag.value)
         activeInputTag.focus();
       } else if (value === "backspace") {
         activeInputTag.value = activeInputTag.value.slice(0, -1);
@@ -81,8 +50,9 @@ const OnScreenKeyboard = () => {
       }
     }
   };
+  console.log("DATA HERE: ", activeInputTag)
   return (
-    <div className="on-screen-keyboard-container grid grid-rows-[repeat(3,minmax(0,4rem))] grid-cols-[repeat(5,minmax(0,4rem))] gap-4 absolute bottom-4 ml-4">
+    <div className="on-screen-keyboard-container grid grid-rows-[repeat(4,minmax(0,3rem))] grid-cols-[repeat(3,minmax(0,3rem))] gap-4">
       {keysArr.map((key) => (
         <div
           key={key}
@@ -103,4 +73,4 @@ const OnScreenKeyboard = () => {
   );
 };
 
-export default OnScreenKeyboard;
+export default OnScreenKeyboardModal;

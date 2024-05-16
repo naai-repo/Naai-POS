@@ -45,6 +45,7 @@ export interface ArtistDisplayProps {
   serviceId: string;
   variableId?: string;
   serviceName: string;
+  artistId: string;
 }
 
 export interface PricingAtomInterface {
@@ -54,6 +55,16 @@ export interface PricingAtomInterface {
   Disc: undefined | number;
 }
 
-export interface SelectedServicesInterface extends ArtistDisplayProps {}
+export interface SelectedServicesInterface extends ArtistDisplayProps {
+  qty: number;
+  disc: number;
+}
 
 export type genderType = "men" | "women" | "unisex" | undefined;
+
+export interface PaymentsInterface {
+  id: number, 
+  type: string,
+  amount: number,
+  remarks: string,
+}

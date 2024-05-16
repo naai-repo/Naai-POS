@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <RecoilContextProvider>
-          {/* <ProcessingModal /> */}
+          <ProcessingModal />
           <Header />
           <div className="flex w-screen">
             <Pricing />
