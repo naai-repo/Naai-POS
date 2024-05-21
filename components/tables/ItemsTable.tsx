@@ -34,7 +34,6 @@ const ItemsTable = () => {
     })
   };
   const selectedServices = useRecoilValue(selectedServiceAtom);
-  console.log("DATA: ", selectedServices);
   return (
     <div className="flex items-start justify-center w-full overflow-auto overflow-y-hidden">
       <Table

@@ -2,10 +2,12 @@
 import { activeInputTagAtom } from "@/lib/atoms/activeInputTag";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { Delete, X } from "lucide-react";
+import { Delete, HandCoins, X } from "lucide-react";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import { pricingAtom } from "@/lib/atoms/pricing";
 import { selectedTableIndexAtom } from "@/lib/atoms/selectedTableIndex";
+import { Button } from "@nextui-org/button";
+import ProcessingModal from "@/components/processingModal/ProcessingModal";
 
 const OnScreenKeyboard = () => {
   const keysArr = [
@@ -24,6 +26,8 @@ const OnScreenKeyboard = () => {
     "3",
     "0",
   ];
+
+  const [openProcessModal, setOpenProcessModal] = useState(false);
   const [activeInputTag, setActiveInputTag] =
     useRecoilState(activeInputTagAtom);
   const setSelectedServices = useSetRecoilState(selectedServiceAtom);
@@ -72,7 +76,12 @@ const OnScreenKeyboard = () => {
     }
 
     if (activeInputTag) {
-      if (value !== "backspace" && value !== "close" && value !== "update" && value !== "cancel") {
+      if (
+        value !== "backspace" &&
+        value !== "close" &&
+        value !== "update" &&
+        value !== "cancel"
+      ) {
         activeInputTag.value += value;
         activeInputTag.focus();
       } else if (value === "backspace") {
@@ -82,23 +91,31 @@ const OnScreenKeyboard = () => {
     }
   };
   return (
-    <div className="on-screen-keyboard-container grid grid-rows-[repeat(3,minmax(0,4rem))] grid-cols-[repeat(5,minmax(0,4rem))] gap-4 absolute bottom-4 ml-4">
-      {keysArr.map((key) => (
-        <div
-          key={key}
-          className="flex justify-center items-center bg-naai-pos-500 drop-shadow-md cursor-pointer"
-          onClick={handleNumClick}
-          data-key={key}
-        >
-          {key === "backspace" ? (
-            <Delete size={24} className="pointer-events-none" />
-          ) : key === "close" ? (
-            <X size={24} className="pointer-events-none" />
-          ) : (
-            key
-          )}
+    <div className="flex w-full justify-between">
+      <div className="on-screen-keyboard-parent">
+        <div className="on-screen-keyboard-container grid grid-rows-[repeat(3,minmax(0,4rem))] grid-cols-[repeat(5,minmax(0,4rem))] gap-4 relative bottom-4 ml-4">
+          {keysArr.map((key) => (
+            <div
+              key={key}
+              className="flex justify-center items-center bg-naai-pos-500 drop-shadow-md cursor-pointer"
+              onClick={handleNumClick}
+              data-key={key}
+            >
+              {key === "backspace" ? (
+                <Delete size={24} className="pointer-events-none" />
+              ) : key === "close" ? (
+                <X size={24} className="pointer-events-none" />
+              ) : (
+                key
+              )}
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
+      <Button className="h-[4rem] rounded-md flex justify-center items-center bg-naai-pos-500 drop-shadow-md cursor-pointer mr-4" onClick={() => setOpenProcessModal(true)}>
+        <HandCoins /> Process{" "}
+        <ProcessingModal isOpen={openProcessModal} setOpenProcessModal={setOpenProcessModal} />
+      </Button>
     </div>
   );
 };

@@ -6,7 +6,6 @@ import Pricing from "@/components/pricing/Pricing";
 import Action_Buttons from "@/components/action-buttons/Action_Buttons";
 import Main_Section from "@/components/main/Main_Section";
 import RecoilContextProvider from "./RecoilContextProvider";
-import ProcessingModal from "@/components/processingModal/ProcessingModal";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,8 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <RecoilContextProvider>
-          <ProcessingModal />
+        <RecoilContextProvider>        
           <Header />
           <div className="flex w-screen">
             <Pricing />

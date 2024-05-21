@@ -50,7 +50,6 @@ const OnScreenKeyboardModal = () => {
       }
     }
   };
-  console.log("DATA HERE: ", activeInputTag)
   return (
     <div className="on-screen-keyboard-container grid grid-rows-[repeat(4,minmax(0,3rem))] grid-cols-[repeat(3,minmax(0,3rem))] gap-4">
       {keysArr.map((key) => (

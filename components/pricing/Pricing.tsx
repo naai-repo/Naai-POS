@@ -37,13 +37,8 @@ const PricingInput = ({
     let input = inputRef.current;
     if (input) input.value = defaultValue;
   }, [defaultValue]);
-  
-  useEffect(() => {
-    console.log("CHECK from useEffect ")
-  }, [inputRef.current?.value])
 
   const handleOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("CHECK: ");
     setPricing((prev) => {
       // console.log(prev, "prev pricing");
       return {
