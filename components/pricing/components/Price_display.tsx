@@ -2,8 +2,7 @@
 import { currencyOptions } from '@/lib/helper';
 import React, { useEffect, useState } from 'react'
 
-const Price_display = ({align} : {align: "left" | "right" | "center"}) => {
-  const [price, setPrice] = useState<number>(10000);
+const Price_display = ({align, price=0} : {align: "left" | "right" | "center", price?: number}) => {
   const [orientation, setOrientation] = useState<string>("justify-end");
 
   useEffect(() => {

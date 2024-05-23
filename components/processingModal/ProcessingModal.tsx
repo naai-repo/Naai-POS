@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -25,6 +25,8 @@ import {
 import OnScreenKeyboardModal from "./components/OnScreenKeyboardModal";
 import { PaymentsInterface } from "@/lib/types";
 import RemarksModal from "./components/RemarksModal";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 
 const DisplayBillInfo = ({
   title,
@@ -88,8 +90,51 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
   const [activeKey, setActiveKey] = useState<string | number | bigint>("");
   const [payments, setPayments] = useState<PaymentsInterface[]>([]);
   const [cashAmount, setCashAmount] = useState<number | string>(0);
+  const [percentDisc, setPercentDisc] = useState<number | string>(0)
+  const [percentCashDisc, setPercentCashDisc] = useState<number>(0)
+  const [cashDisc, setCashDisc] = useState<number | string>(0)
   const [paymentMethod, setPaymentMethod] = useState<number | string>("cash");
   const [openRemarksModal, setOpenRemarksModal] = useState<boolean>(false);
+  const [originalBillValue, setOriginalBillValue] = useState<number>(0);
+  const [itemTotal, setItemTotal] = useState<number>(0);
+  const [totalGst, setTotalGst] = useState<number>(0);
+  const [finalAmount, setFinalAmount] = useState<number>(0);
+  const [uniqueItems, setUniqueItems] = useState<number>(0);
+  const [totalQty, setTotalQty] = useState<number>(0);
+  const selectedServices = useRecoilValue(selectedServiceAtom);
+  
+  useEffect(() => {
+    let totalBasePrice = 0;
+    let totalItemPrice = 0;
+    let totalGST = 0;
+    let totalQuantity = 0;
+    selectedServices.map((service) => {
+      totalBasePrice += service.basePrice * service.qty;
+      totalItemPrice += service.price * service.qty;
+      totalGST += service.price * service.qty * 0.18;
+      totalQuantity += service.qty;
+    })
+    setOriginalBillValue(totalBasePrice);
+    setItemTotal(totalItemPrice);
+    setTotalGst(totalGST);
+    setFinalAmount((totalItemPrice + totalGST));
+    setTotalQty(totalQuantity);
+    setUniqueItems(selectedServices.length);
+    if(Number(cashDisc) !== 0){
+      setFinalAmount((prev) => prev - Number(cashDisc));
+    }else{
+      setCashDisc(0);
+    }
+    if(Number(percentDisc) !== 0){
+      setFinalAmount((prev) => (
+        setPercentCashDisc((Number(percentDisc) * prev) / 100),
+        prev - (Number(percentDisc) * prev) / 100
+      ));
+    }else{
+      setPercentCashDisc(0);
+      setPercentDisc(0);
+    }
+  }, [selectedServices, cashDisc, percentDisc]);
 
   const handleAddingPayments = () => {
     setPayments([
@@ -101,18 +146,23 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
         remarks: "",
       },
     ]);
+    setFinalAmount((prev) => prev - Number(cashAmount));
   };
 
   const handleRowSelection = (key: string | number | bigint) => {
-    console.log("Row Selected: ", key);
     setActiveKey(key);
   };
 
   const handleDeleteRow = () => {
     if (activeKey !== "") {
-      let newPayments = payments.filter(
-        (payment) => payment.id.toString() !== activeKey
-      );
+      let newPayments = [];
+      for(let index in payments){
+        if(payments[index].id.toString() !== activeKey){
+          newPayments.push(payments[index]);
+        }else{
+          setFinalAmount((prev) => prev + Number(payments[index].amount));
+        }
+      }
       for (let index in newPayments) {
         newPayments[index].id = parseInt(index) + 1;
       }
@@ -122,7 +172,12 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
   };
 
   const handleCancelButton = () => {
+    let totalPrice = 0;
+    payments.map((payment) => {
+      totalPrice += Number(payment.amount);
+    });
     setPayments([]);
+    setFinalAmount((prev) => prev + totalPrice);
   };
 
   return (
@@ -148,36 +203,36 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
             <>
               <ModalHeader className="flex flex-col gap-1">Payment</ModalHeader>
               <ModalBody>
-                <Price_display align="center" />
+                <Price_display align="center" price = {finalAmount}/>
                 <div className="bill-information grid grid-cols-3 grid-rows-2 border-b-black border-b">
                   <DisplayBillInfo
                     title="Original Bill Value"
-                    value={6375}
+                    value={originalBillValue}
                     money={true}
                   />
                   <DisplayBillInfo
                     title="item Total"
-                    value={5623.68}
+                    value={itemTotal}
                     money={true}
                   />
                   <DisplayBillInfo
                     title="total GST"
-                    value={144.68}
+                    value={totalGst}
                     money={true}
                   />
                   <DisplayBillInfo
                     title="% disc Amount"
-                    value={628.8}
+                    value={percentCashDisc}
                     money={true}
                   />
                   <DisplayBillInfo
                     title="cash Disc Amount"
-                    value={36}
+                    value={Number(cashDisc)}
                     money={true}
                   />
                   <DisplayBillInfo
                     title="final invoice amount"
-                    value={5700}
+                    value={finalAmount}
                     money={true}
                   />
                 </div>
@@ -200,8 +255,8 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
                     </div>
                   </div>
                   <div className="extra-info-tab grid grid-cols-2 grid-rows-1 w-1/2 border border-black py-4">
-                    <DisplayBillInfo title="Unique Items" value={3} />
-                    <DisplayBillInfo title="Total Quantity" value={3} />
+                    <DisplayBillInfo title="Unique Items" value={uniqueItems} />
+                    <DisplayBillInfo title="Total Quantity" value={totalQty} />
                   </div>
                 </div>
                 <div className="info-container flex">
@@ -212,11 +267,11 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
                       </div>
                       <DisplayInfoWithInbox
                         title="Percent %"
-                        setState={setCashAmount}
+                        setState={setPercentDisc}
                       />
                       <DisplayInfoWithInbox
                         title="cash"
-                        setState={setCashAmount}
+                        setState={setCashDisc}
                       />
                     </div>
                     <div className="discount-container relative border border-black px-4 pt-4 pb-12 mt-4">
