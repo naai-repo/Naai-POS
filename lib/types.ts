@@ -1,3 +1,5 @@
+import exp from "constants";
+
 export interface title_cardProps {
   title: string;
   navigate: string;
@@ -67,4 +69,15 @@ export interface PaymentsInterface {
   type: string,
   amount: number,
   remarks: string,
+}
+
+export interface CustomerInfoInterface {
+  name: string;
+  phoneNumber: string;
+}
+
+export interface HoldDataInterface {
+  title: string;
+  selectedServices: SelectedServicesInterface[];
+  customerInfo: CustomerInfoInterface
 }
