@@ -3,9 +3,9 @@ import React, { use, useEffect, useRef } from "react";
 import Price_display from "./components/Price_display";
 import { Input } from "@nextui-org/input";
 import ItemsTable from "../tables/ItemsTable";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { pricingAtom } from "@/lib/atoms/pricing";
-import { input } from "@nextui-org/react";
+import { customerInfoAtom } from "@/lib/atoms/customerInfo";
 
 const PricingInputArray = ["Qty", "Price", "GST", "Disc"];
 
@@ -74,18 +74,32 @@ const PricingInput = ({
 
 const Pricing = () => {
   const pricing = useRecoilValue(pricingAtom);
+  const  [customer, setCustomer] = useRecoilState(customerInfoAtom);
+  const searchCustomer = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (searchCustomer.current) {
+      searchCustomer.current.value = customer.phoneNumber || "";
+    }
+  },[customer])
+  const handlePhoneNumberChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+    setCustomer((prev) => {
+      return {
+        ...prev,
+        phoneNumber: e.target.value
+      }
+    })
+  }
   return (
     <div className="h-[calc(100vh-1.5rem)] bg-naai-pos-200 w-[25%] relative">
       <Price_display align = "right"/>
       <ItemsTable />
       <div className="w-full bottom-0 absolute p-2">
-        <Input
-          className="bg-white"
+        <input
+          className="bg-white min-h-3 h-6 rounded-md p-2 text-sm w-full"
           placeholder="Search Customer (Phone No.)"
-          classNames={{
-            inputWrapper: "min-h-3",
-            mainWrapper: "h-6",
-          }}
+          onChange={handlePhoneNumberChange}
+          id="search-customer"
+          ref={searchCustomer}
         />
         <div className="grid p-3 grid-rows-2 grid-cols-2">
           <CustomerDetail detail="Pending" value="--" />
