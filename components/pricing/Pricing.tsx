@@ -1,11 +1,13 @@
 "use client";
-import React, { use, useEffect, useRef } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import Price_display from "./components/Price_display";
-import { Input } from "@nextui-org/input";
+import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import ItemsTable from "../tables/ItemsTable";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { pricingAtom } from "@/lib/atoms/pricing";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
+import DropDownMenu from "./components/DropDownMenu";
+import axios from "axios";
 
 const PricingInputArray = ["Qty", "Price", "GST", "Disc"];
 
@@ -40,7 +42,6 @@ const PricingInput = ({
 
   const handleOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPricing((prev) => {
-      // console.log(prev, "prev pricing");
       return {
         ...prev,
         [name]: e.target.value,
@@ -76,12 +77,18 @@ const Pricing = () => {
   const pricing = useRecoilValue(pricingAtom);
   const  [customer, setCustomer] = useRecoilState(customerInfoAtom);
   const searchCustomer = useRef<HTMLInputElement>(null);
+  
+  const [showDropDown, setShowDropDown] = useState(false);
   useEffect(() => {
     if (searchCustomer.current) {
       searchCustomer.current.value = customer.phoneNumber || "";
+      if(searchCustomer.current.value === ""){
+        setShowDropDown(false);
+      }
     }
   },[customer])
   const handlePhoneNumberChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+    setShowDropDown(true);
     setCustomer((prev) => {
       return {
         ...prev,
@@ -100,7 +107,9 @@ const Pricing = () => {
           onChange={handlePhoneNumberChange}
           id="search-customer"
           ref={searchCustomer}
+          autoComplete="off"
         />
+        {showDropDown && <DropDownMenu setShowDropDown={setShowDropDown} />}
         <div className="grid p-3 grid-rows-2 grid-cols-2">
           <CustomerDetail detail="Pending" value="--" />
           <CustomerDetail detail="Advance" value="--" />

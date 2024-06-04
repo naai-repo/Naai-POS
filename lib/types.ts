@@ -74,10 +74,24 @@ export interface PaymentsInterface {
 export interface CustomerInfoInterface {
   name: string;
   phoneNumber: string;
+  id: string;
+  gender: string
 }
 
 export interface HoldDataInterface {
   title: string;
   selectedServices: SelectedServicesInterface[];
   customerInfo: CustomerInfoInterface
+}
+
+export interface CouponInterface {
+  id: string;
+  code: string;
+  discount: number;
+  expiryDate: Date;
+  salonId: string,
+  min_cart_value: number;
+  max_value: number;
+  isActive: boolean;
+  couponDiscount: number;
 }
