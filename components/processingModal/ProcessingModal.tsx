@@ -6,11 +6,9 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  useDisclosure,
 } from "@nextui-org/modal";
 import { currencyOptions } from "@/lib/helper";
 import Price_display from "../pricing/components/Price_display";
-import { Input } from "@nextui-org/input";
 import { Check, X } from "lucide-react";
 import { Button } from "@nextui-org/button";
 import { Checkbox } from "@nextui-org/react";
@@ -23,10 +21,15 @@ import {
   TableCell,
 } from "@nextui-org/react";
 import OnScreenKeyboardModal from "./components/OnScreenKeyboardModal";
-import { PaymentsInterface } from "@/lib/types";
+import { CouponInterface, PaymentsInterface } from "@/lib/types";
 import RemarksModal from "./components/RemarksModal";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
+import axios from "axios";
+import { customerInfoAtom } from "@/lib/atoms/customerInfo";
+import { SALONID, Urls } from "@/lib/api";
+import { couponAtom } from "@/lib/atoms/coupons";
+import useResetAllState from "@/lib/hooks/UseResetAllState";
 
 const DisplayBillInfo = ({
   title,
@@ -86,13 +89,19 @@ const DisplayInfoWithInbox = ({
   );
 };
 
-const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOpenProcessModal: React.Dispatch<React.SetStateAction<boolean>>}) => {
+const ProcessingModal = ({
+  isOpen,
+  setOpenProcessModal,
+}: {
+  isOpen: boolean;
+  setOpenProcessModal: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
   const [activeKey, setActiveKey] = useState<string | number | bigint>("");
   const [payments, setPayments] = useState<PaymentsInterface[]>([]);
   const [cashAmount, setCashAmount] = useState<number | string>(0);
-  const [percentDisc, setPercentDisc] = useState<number | string>(0)
-  const [percentCashDisc, setPercentCashDisc] = useState<number>(0)
-  const [cashDisc, setCashDisc] = useState<number | string>(0)
+  const [percentDisc, setPercentDisc] = useState<number | string>(0);
+  const [percentCashDisc, setPercentCashDisc] = useState<number>(0);
+  const [cashDisc, setCashDisc] = useState<number | string>(0);
   const [paymentMethod, setPaymentMethod] = useState<number | string>("cash");
   const [openRemarksModal, setOpenRemarksModal] = useState<boolean>(false);
   const [originalBillValue, setOriginalBillValue] = useState<number>(0);
@@ -101,8 +110,20 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
   const [finalAmount, setFinalAmount] = useState<number>(0);
   const [uniqueItems, setUniqueItems] = useState<number>(0);
   const [totalQty, setTotalQty] = useState<number>(0);
+  const [coupon, setCoupon] = useState("");
   const selectedServices = useRecoilValue(selectedServiceAtom);
-  
+  const customer = useRecoilValue(customerInfoAtom);
+  const [selectedCoupon, setSelectedCoupon] = useRecoilState(couponAtom);
+  const resetSelectedCoupon = useResetRecoilState(couponAtom);
+  const {resetAllState} = useResetAllState();
+  const couponRef = React.useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (couponRef.current) {
+      couponRef.current.value = selectedCoupon.code;
+    }
+  }, [selectedCoupon, isOpen]);
+
   useEffect(() => {
     let totalBasePrice = 0;
     let totalItemPrice = 0;
@@ -113,24 +134,26 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
       totalItemPrice += service.price * service.qty;
       totalGST += service.price * service.qty * 0.18;
       totalQuantity += service.qty;
-    })
+    });
     setOriginalBillValue(totalBasePrice);
     setItemTotal(totalItemPrice);
     setTotalGst(totalGST);
-    setFinalAmount((totalItemPrice + totalGST));
+    setFinalAmount(totalItemPrice + totalGST);
     setTotalQty(totalQuantity);
     setUniqueItems(selectedServices.length);
-    if(Number(cashDisc) !== 0){
+    if (Number(cashDisc) !== 0) {
       setFinalAmount((prev) => prev - Number(cashDisc));
-    }else{
+    } else {
       setCashDisc(0);
     }
-    if(Number(percentDisc) !== 0){
-      setFinalAmount((prev) => (
-        setPercentCashDisc((Number(percentDisc) * prev) / 100),
-        prev - (Number(percentDisc) * prev) / 100
-      ));
-    }else{
+    if (Number(percentDisc) !== 0) {
+      setFinalAmount(
+        (prev) => (
+          setPercentCashDisc((Number(percentDisc) * prev) / 100),
+          prev - (Number(percentDisc) * prev) / 100
+        )
+      );
+    } else {
       setPercentCashDisc(0);
       setPercentDisc(0);
     }
@@ -156,10 +179,10 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
   const handleDeleteRow = () => {
     if (activeKey !== "") {
       let newPayments = [];
-      for(let index in payments){
-        if(payments[index].id.toString() !== activeKey){
+      for (let index in payments) {
+        if (payments[index].id.toString() !== activeKey) {
           newPayments.push(payments[index]);
-        }else{
+        } else {
           setFinalAmount((prev) => prev + Number(payments[index].amount));
         }
       }
@@ -179,6 +202,91 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
     setPayments([]);
     setFinalAmount((prev) => prev + totalPrice);
   };
+
+  const handleProcessButton = async () => {
+    if (customer.phoneNumber === "") {
+      alert("Please Enter Customer Details");
+      setOpenProcessModal(false);
+      return;
+    }
+    let data = await axios.post(
+      Urls.AddWalkinBooking,
+      {
+        salon: SALONID,
+        selectedServices: selectedServices,
+        customer: customer,
+        bill: {
+          originalAmount: originalBillValue + totalGst,
+          finalInvoiceAmount: finalAmount,
+          cashDisc: cashDisc,
+          percentDisc: percentDisc,
+          gst: totalGst,
+        },
+        payments: payments,
+        coupon: selectedCoupon,
+      }
+    );
+    console.log("Processing Payments");
+    resetAllState(); // Reset all states
+    setFinalAmount(0);
+    setCashDisc(0);
+    setOpenProcessModal(false);
+  };
+
+  const handleAddingCoupons = async () => {
+    try {
+      let res = await axios.get(
+        `${Urls.FetchCoupon}?code=${coupon}&salonId=000000000000000000000000`
+      );
+      let data = res.data.data;
+      if (data.count === 0) {
+        alert("Invalid Coupon Code");
+        return;
+      }
+      let newCoupon = {
+        id: data.coupons[0]._id,
+        code: data.coupons[0].code,
+        discount: data.coupons[0].discount,
+        expiryDate: data.coupons[0].expiryDate,
+        salonId: data.coupons[0].salonId,
+        min_cart_value: data.coupons[0].min_cart_value,
+        max_value: data.coupons[0].max_value,
+        isActive: data.coupons[0].isActive,
+      };
+      if (newCoupon.min_cart_value > finalAmount) {
+        alert("Minimum Cart Value not met");
+        return;
+      }
+      if (!newCoupon.isActive) {
+        alert("Coupon Expired");
+        return;
+      }
+      let discountValue = finalAmount * (newCoupon.discount / 100);
+      if (discountValue > newCoupon.max_value) {
+        setFinalAmount(finalAmount - newCoupon.max_value);
+        newCoupon = {
+          ...newCoupon,
+          couponDiscount: newCoupon.max_value,
+        };
+      } else {
+        setFinalAmount(finalAmount - discountValue);
+        newCoupon = {
+          ...newCoupon,
+          couponDiscount: discountValue,
+        };
+      }
+      setSelectedCoupon(newCoupon);
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  };
+
+  const handleCancelingCoupons = () => {
+    setFinalAmount(finalAmount + selectedCoupon.couponDiscount);
+    resetSelectedCoupon();
+    setCoupon("");
+  }
 
   return (
     <>
@@ -203,7 +311,7 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
             <>
               <ModalHeader className="flex flex-col gap-1">Payment</ModalHeader>
               <ModalBody>
-                <Price_display align="center" price = {finalAmount}/>
+                <Price_display align="center" price={finalAmount} />
                 <div className="bill-information grid grid-cols-3 grid-rows-2 border-b-black border-b">
                   <DisplayBillInfo
                     title="Original Bill Value"
@@ -243,13 +351,18 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
                         type="email"
                         placeholder="Enter Coupon Code"
                         className="p-4"
+                        onChange={(e) => setCoupon(e.target.value)}
+                        ref={couponRef}
                       />
                     </div>
                     <div className="action-buttons-coupons flex justify-between items-center w-[20%]">
-                      <div className="tick-mark h-7 w-7 grid place-items-center shadow-md ">
+                      <div
+                        className="tick-mark h-7 w-7 grid place-items-center shadow-md "
+                        onClick={handleAddingCoupons}
+                      >
                         <Check color="green" />
                       </div>
-                      <div className="cross-mark h-7 w-7 grid place-items-center shadow-md">
+                      <div className="cross-mark h-7 w-7 grid place-items-center shadow-md" onClick={handleCancelingCoupons}>
                         <X color="red" />
                       </div>
                     </div>
@@ -377,12 +490,24 @@ const ProcessingModal = ({isOpen, setOpenProcessModal} : {isOpen: boolean, setOp
                     >
                       Remarks
                     </Button>
-                    <Button
-                      size="lg"
-                      className="w-full bg-naai-primary text-white rounded-md mt-2"
-                    >
-                      Process
-                    </Button>
+                    {finalAmount === 0 ? (
+                      <Button
+                        size="lg"
+                        className="w-full bg-naai-primary text-white rounded-md mt-2"
+                        onClick={handleProcessButton}
+                      >
+                        Process
+                      </Button>
+                    ) : (
+                      <Button
+                        size="lg"
+                        className="w-full bg-naai-primary text-white rounded-md mt-2"
+                        isDisabled
+                        onClick={handleProcessButton}
+                      >
+                        Process
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div className="payments-table">
