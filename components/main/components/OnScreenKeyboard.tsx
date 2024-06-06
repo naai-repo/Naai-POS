@@ -15,20 +15,20 @@ import { HoldDataInterface } from "@/lib/types";
 
 const OnScreenKeyboard = () => {
   const keysArr = [
-    "7",
-    "8",
-    "9",
-    "close",
+    // "7",
+    // "8",
+    // "9",
     "update",
-    "4",
-    "5",
-    "6",
-    "backspace",
-    "cancel",
-    "1",
-    "2",
-    "3",
-    "0",
+    "close",
+    // "4",
+    // "5",
+    // "6",
+    // "backspace",
+    // "cancel",
+    // "1",
+    // "2",
+    // "3",
+    // "0",
   ];
 
   const [openProcessModal, setOpenProcessModal] = useState(false);
@@ -128,15 +128,17 @@ const OnScreenKeyboard = () => {
     let searchCustomer = document.getElementById("search-customer") as HTMLInputElement;
     searchCustomer.value = "";
   }
+  // CSS for full keyboard
+  // on-screen-keyboard-container grid grid-rows-[repeat(3,minmax(0,4rem))] grid-cols-[repeat(5,minmax(0,4rem))] gap-4 relative bottom-4 ml-4
 
   return (
     <div className="flex w-full justify-between">
       <div className="on-screen-keyboard-parent">
-        <div className="on-screen-keyboard-container grid grid-rows-[repeat(3,minmax(0,4rem))] grid-cols-[repeat(5,minmax(0,4rem))] gap-4 relative bottom-4 ml-4">
+        <div className="on-screen-keyboard-container grid grid-rows-[repeat(2,minmax(0,4rem))] grid-cols-[repeat(2,minmax(0,6rem))] gap-4 relative bottom-4 ml-4">
           {keysArr.map((key) => (
             <div
               key={key}
-              className="flex justify-center items-center bg-naai-pos-500 drop-shadow-md cursor-pointer"
+              className="flex justify-center items-center bg-naai-pos-500 drop-shadow-md cursor-pointer rounded-md"
               onClick={handleNumClick}
               data-key={key}
             >
