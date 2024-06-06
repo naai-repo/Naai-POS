@@ -3,7 +3,7 @@ import React, { use, useEffect, useRef, useState } from "react";
 import Price_display from "./components/Price_display";
 import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 import ItemsTable from "../tables/ItemsTable";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from "recoil";
 import { pricingAtom } from "@/lib/atoms/pricing";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
 import DropDownMenu from "./components/DropDownMenu";
@@ -77,18 +77,38 @@ const Pricing = () => {
   const pricing = useRecoilValue(pricingAtom);
   const  [customer, setCustomer] = useRecoilState(customerInfoAtom);
   const searchCustomer = useRef<HTMLInputElement>(null);
+  const resetCustomer = useResetRecoilState(customerInfoAtom);
   
   const [showDropDown, setShowDropDown] = useState(false);
+
   useEffect(() => {
     if (searchCustomer.current) {
-      searchCustomer.current.value = customer.phoneNumber || "";
+      if(customer.phoneNumber !== "" && customer.name !== ""){
+        searchCustomer.current.value = `${customer.phoneNumber} - ${customer.name}`;
+      }else{
+        searchCustomer.current.value = customer.phoneNumber  || "";
+      }
       if(searchCustomer.current.value === ""){
         setShowDropDown(false);
       }
     }
   },[customer])
-  const handlePhoneNumberChange = (e : React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhoneNumberChange = (e : React.ChangeEvent<HTMLInputElement>) => {    
+    if(e.nativeEvent.inputType === "deleteContentBackward"){
+      setCustomer({
+          name: "",
+          gender: "",
+          id: "",
+          phoneNumber: e.target.value
+        })
+      return;    
+    }
     setShowDropDown(true);
+    if(e.target.value === ""){
+      resetCustomer();
+      setShowDropDown(false);
+      return;
+    }
     setCustomer((prev) => {
       return {
         ...prev,

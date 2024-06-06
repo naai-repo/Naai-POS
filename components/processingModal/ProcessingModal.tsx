@@ -29,7 +29,7 @@ import axios from "axios";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
 import { SALONID, Urls } from "@/lib/api";
 import { couponAtom } from "@/lib/atoms/coupons";
-import useResetAllState from "@/lib/hooks/UseResetAllState";
+import useResetAllState from "@/lib/hooks/useResetAllState";
 
 const DisplayBillInfo = ({
   title,
@@ -114,6 +114,7 @@ const ProcessingModal = ({
   const selectedServices = useRecoilValue(selectedServiceAtom);
   const customer = useRecoilValue(customerInfoAtom);
   const [selectedCoupon, setSelectedCoupon] = useRecoilState(couponAtom);
+  const [amountPaid, setAmountPaid] = useState(0);
   const resetSelectedCoupon = useResetRecoilState(couponAtom);
   const {resetAllState} = useResetAllState();
   const couponRef = React.useRef<HTMLInputElement>(null);
@@ -123,6 +124,14 @@ const ProcessingModal = ({
       couponRef.current.value = selectedCoupon.code;
     }
   }, [selectedCoupon, isOpen]);
+
+  useEffect(() => {
+    let total : number = 0;
+    payments.forEach((payment) => {
+      total += Number(payment.amount);
+    });
+    setAmountPaid(total);
+  }, [payments])
 
   useEffect(() => {
     let totalBasePrice = 0;
@@ -141,23 +150,23 @@ const ProcessingModal = ({
     setFinalAmount(totalItemPrice + totalGST);
     setTotalQty(totalQuantity);
     setUniqueItems(selectedServices.length);
-    if (Number(cashDisc) !== 0) {
-      setFinalAmount((prev) => prev - Number(cashDisc));
-    } else {
-      setCashDisc(0);
-    }
-    if (Number(percentDisc) !== 0) {
-      setFinalAmount(
-        (prev) => (
-          setPercentCashDisc((Number(percentDisc) * prev) / 100),
-          prev - (Number(percentDisc) * prev) / 100
-        )
-      );
-    } else {
-      setPercentCashDisc(0);
-      setPercentDisc(0);
-    }
-  }, [selectedServices, cashDisc, percentDisc]);
+
+  }, [selectedServices]);
+
+  useEffect(() => {
+    let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - percentCashDisc - amountPaid;
+    setFinalAmount(newAmount -  Number(cashDisc));    
+  }, [cashDisc, itemTotal, totalGst]);
+
+  useEffect(() => {
+    let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - Number(cashDisc || 0) - amountPaid;
+    setFinalAmount(
+      (prev) => (
+        setPercentCashDisc((Number(percentDisc) * newAmount) / 100),
+        newAmount - (Number(percentDisc) * newAmount) / 100
+      )
+    );
+  }, [percentDisc, itemTotal, totalGst]);
 
   const handleAddingPayments = () => {
     setPayments([
@@ -221,6 +230,7 @@ const ProcessingModal = ({
           cashDisc: cashDisc,
           percentDisc: percentDisc,
           gst: totalGst,
+          percentCashDisc: percentCashDisc,
         },
         payments: payments,
         coupon: selectedCoupon,
@@ -230,6 +240,10 @@ const ProcessingModal = ({
     resetAllState(); // Reset all states
     setFinalAmount(0);
     setCashDisc(0);
+    setPercentCashDisc(0);
+    setPercentDisc(0);
+    setPayments([]);
+    setAmountPaid(0);
     setOpenProcessModal(false);
   };
 
@@ -252,6 +266,7 @@ const ProcessingModal = ({
         min_cart_value: data.coupons[0].min_cart_value,
         max_value: data.coupons[0].max_value,
         isActive: data.coupons[0].isActive,
+        couponDiscount: 0,
       };
       if (newCoupon.min_cart_value > finalAmount) {
         alert("Minimum Cart Value not met");
@@ -263,18 +278,19 @@ const ProcessingModal = ({
       }
       let discountValue = finalAmount * (newCoupon.discount / 100);
       if (discountValue > newCoupon.max_value) {
-        setFinalAmount(finalAmount - newCoupon.max_value);
+        setFinalAmount(finalAmount - newCoupon.max_value - amountPaid);
         newCoupon = {
           ...newCoupon,
           couponDiscount: newCoupon.max_value,
         };
       } else {
-        setFinalAmount(finalAmount - discountValue);
+        setFinalAmount(finalAmount - discountValue - amountPaid);
         newCoupon = {
           ...newCoupon,
           couponDiscount: discountValue,
         };
       }
+      console.log(newCoupon.couponDiscount);
       setSelectedCoupon(newCoupon);
     } catch (err) {
       console.log(err);
@@ -449,7 +465,7 @@ const ProcessingModal = ({
                       />
                     </div>
                     <div className="keyboard-container relative mt-2">
-                      <OnScreenKeyboardModal />
+                      {/* <OnScreenKeyboardModal /> */}
                     </div>
                   </div>
                   <div className="action-buttons w-[18%] flex flex-col justify-end items-end">
