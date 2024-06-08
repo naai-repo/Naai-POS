@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { RadioGroup, Radio, Button } from "@nextui-org/react";
 import axios from "axios";
-import { Urls } from "@/lib/api";
+import { SALONID, Urls } from "@/lib/api";
 import { useRecoilState } from "recoil";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
 
@@ -20,6 +20,7 @@ const EnterUserDetails = ({
       phoneNumber: customer.phoneNumber,
       name: userName,
       gender: gender,
+      salonId : SALONID
     });
     let user = response.data.data;
     setCustomer({
