@@ -4,7 +4,7 @@ import { CustomerInfoInterface } from "@/lib/types";
 import axios from "axios";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
-import { Urls } from "@/lib/api";
+import { SALONID, Urls } from "@/lib/api";
 import EnterUserDetails from "./EnterUserDetails";
 
 const DropDownMenu = ({
@@ -20,7 +20,7 @@ const DropDownMenu = ({
   useEffect(() => {
     async function getCustomersList() {
       let response = await axios.get(
-        `${Urls.GetCustomerList}?number=${customer.phoneNumber}`
+        `${Urls.GetCustomerList}?number=${customer.phoneNumber}&salonId=${SALONID}`
       );
       response = response.data;
       if (response.data.length === 0) {

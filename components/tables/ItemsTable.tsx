@@ -57,7 +57,7 @@ const ItemsTable = () => {
         <TableBody>
           {selectedServices.map((service, id) => {
             return (
-              <TableRow key={id} onClick={() => handleRowClick(id)}>
+              <TableRow key={id} onClick={() => handleRowClick(id)} className="bg-white">
                 <TableCell>{service.serviceName}</TableCell>
                 <TableCell className="flex justify-center">
                   {service.qty}

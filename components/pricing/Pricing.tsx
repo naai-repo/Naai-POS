@@ -93,7 +93,12 @@ const Pricing = () => {
       }
     }
   },[customer])
-  const handlePhoneNumberChange = (e : React.ChangeEvent<HTMLInputElement>) => {    
+  const handlePhoneNumberChange = (e : React.ChangeEvent<HTMLInputElement>) => {   
+    
+    if(!("inputType" in e.nativeEvent)){
+      return;
+    }
+
     if(e.nativeEvent.inputType === "deleteContentBackward"){
       setCustomer({
           name: "",
