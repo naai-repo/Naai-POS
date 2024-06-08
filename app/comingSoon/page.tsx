@@ -8,7 +8,7 @@ const page = () => {
       <div className="center-container h-1/2 w-1/2 bg-red-400 absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex justify-center flex-col items-center text-center">
         <h1 className="text-4xl mb-4 font-medium">Upgrade to Naai plus</h1>
         <p className="text-xl font-normal mb-4">
-          Contact us to get access to India's Faster, Smarter and Better
+          Contact us to get access to India&apos;s Faster, Smarter and Better
           software.
         </p>
         <div className="number-logo mb-4">
