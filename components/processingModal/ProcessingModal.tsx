@@ -21,9 +21,9 @@ import {
   TableCell,
 } from "@nextui-org/react";
 import OnScreenKeyboardModal from "./components/OnScreenKeyboardModal";
-import { CouponInterface, PaymentsInterface } from "@/lib/types";
+import { CouponInterface, PaymentsInterface, SelectedServicesInterface } from "@/lib/types";
 import RemarksModal from "./components/RemarksModal";
-import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from "recoil";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import axios from "axios";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
@@ -55,11 +55,13 @@ const DisplayInfoWithInbox = ({
   dropDown = false,
   options = [],
   setState,
+  id=undefined
 }: {
   title: string;
   dropDown?: boolean;
   options?: string[];
   setState: React.Dispatch<React.SetStateAction<number | string>>;
+  id?: string;
 }) => {
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState(e.target.value);
@@ -82,7 +84,7 @@ const DisplayInfoWithInbox = ({
             ))}
           </select>
         ) : (
-          <input type="number" min={0} onChange={handleOnChange} />
+          <input type="number" min={0} onChange={handleOnChange} id={id? id : undefined}/>
         )}
       </div>
     </div>
@@ -112,12 +114,14 @@ const ProcessingModal = ({
   const [totalQty, setTotalQty] = useState<number>(0);
   const [coupon, setCoupon] = useState("");
   const selectedServices = useRecoilValue(selectedServiceAtom);
+  const setSelectedServices = useSetRecoilState(selectedServiceAtom)
   const customer = useRecoilValue(customerInfoAtom);
   const [selectedCoupon, setSelectedCoupon] = useRecoilState(couponAtom);
   const [amountPaid, setAmountPaid] = useState(0);
   const resetSelectedCoupon = useResetRecoilState(couponAtom);
   const {resetAllState} = useResetAllState();
   const couponRef = React.useRef<HTMLInputElement>(null);
+  // const [salonDiscount, setSalonDiscount] = useState<number | string>(0);
 
   useEffect(() => {
     if (couponRef.current) {
@@ -132,6 +136,33 @@ const ProcessingModal = ({
     });
     setAmountPaid(total);
   }, [payments])
+
+  useEffect(() => {
+    function divideCashDiscount(){
+      let totalDiscount:number = Number(cashDisc) + Number(percentCashDisc) + selectedCoupon.couponDiscount;
+      let newSelectedServices : SelectedServicesInterface[] = [] as SelectedServicesInterface[];
+      let totalItemPrice = 0;
+      selectedServices.map((service) => {
+        totalItemPrice += service.price * service.qty;
+      });
+      selectedServices.map((service) => {
+        let discount = (service.price / totalItemPrice) * totalDiscount;
+        let newService = {
+          ...service,
+          price: service.basePrice - discount,
+          disc: discount
+        }
+        newSelectedServices.push(newService);
+      });
+      setSelectedServices(newSelectedServices);
+    }
+    divideCashDiscount();
+  }, [cashDisc, percentCashDisc, percentDisc, selectedCoupon.couponDiscount]);
+
+  // useEffect(() => {
+  //   let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - Number(cashDisc || 0) - amountPaid - percentCashDisc;
+  //   setFinalAmount(newAmount - Number(salonDiscount));
+  // }, [salonDiscount]);
 
   useEffect(() => {
     let totalBasePrice = 0;
@@ -153,20 +184,20 @@ const ProcessingModal = ({
 
   }, [selectedServices]);
 
-  useEffect(() => {
-    let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - percentCashDisc - amountPaid;
-    setFinalAmount(newAmount -  Number(cashDisc));    
-  }, [cashDisc, itemTotal, totalGst]);
+  // useEffect(() => {
+  //   let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - percentCashDisc - amountPaid;
+  //   setFinalAmount(newAmount -  Number(cashDisc));    
+  // }, [cashDisc, itemTotal, totalGst]);
 
-  useEffect(() => {
-    let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - Number(cashDisc || 0) - amountPaid;
-    setFinalAmount(
-      (prev) => (
-        setPercentCashDisc((Number(percentDisc) * newAmount) / 100),
-        newAmount - (Number(percentDisc) * newAmount) / 100
-      )
-    );
-  }, [percentDisc, itemTotal, totalGst]);
+  // useEffect(() => {
+  //   let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - Number(cashDisc || 0) - amountPaid;
+  //   setFinalAmount(
+  //     (prev) => (
+  //       setPercentCashDisc((Number(percentDisc) * newAmount) / 100),
+  //       newAmount - (Number(percentDisc) * newAmount) / 100
+  //     )
+  //   );
+  // }, [percentDisc, itemTotal, totalGst]);
 
   const handleAddingPayments = () => {
     setPayments([
@@ -179,6 +210,8 @@ const ProcessingModal = ({
       },
     ]);
     setFinalAmount((prev) => prev - Number(cashAmount));
+    let cashInput = document.getElementById("cash-amt") as HTMLInputElement;
+    cashInput.value = "";
   };
 
   const handleRowSelection = (key: string | number | bigint) => {
@@ -225,7 +258,7 @@ const ProcessingModal = ({
         selectedServices: selectedServices,
         customer: customer,
         bill: {
-          originalAmount: originalBillValue + totalGst,
+          originalAmount: originalBillValue * 1.18,
           finalInvoiceAmount: finalAmount,
           cashDisc: cashDisc,
           percentDisc: percentDisc,
@@ -318,7 +351,7 @@ const ProcessingModal = ({
         isOpen={isOpen}
         onClose={() => setOpenProcessModal(false)}
         classNames={{
-          base: "h-[90%]",
+          base: "h-[100%] max-h-[98%]",
         }}
         scrollBehavior="inside"
       >
@@ -402,6 +435,10 @@ const ProcessingModal = ({
                         title="cash"
                         setState={setCashDisc}
                       />
+                      {/* <DisplayInfoWithInbox
+                        title="Roundoff"
+                        setState={setSalonDiscount}
+                      /> */}
                     </div>
                     <div className="discount-container relative border border-black px-4 pt-4 pb-12 mt-4">
                       <div className="absolute capitalize top-[-12px] w-fit bg-naai-pos-200 text-sm">
@@ -410,6 +447,7 @@ const ProcessingModal = ({
                       <DisplayInfoWithInbox
                         title="Cash Amount: "
                         setState={setCashAmount}
+                        id="cash-amt"
                       />
                       <DisplayInfoWithInbox
                         title="Payment Type: "
@@ -425,7 +463,7 @@ const ProcessingModal = ({
                         Add
                       </Button>
                     </div>
-                    <div className="balance-tab px-6 py-8">
+                    {/* <div className="balance-tab px-6 py-8">
                       <div className="display-bill-info-component flex justify-between items-center px-4">
                         <div className="title-name text-lg font-semibold capitalize">
                           balance
@@ -434,7 +472,7 @@ const ProcessingModal = ({
                           {(0).toLocaleString("en-In", currencyOptions)}
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="right-container p-2">
                     <div className="title capitalize text-lg text-gray-400 font-semibold flex">
@@ -469,12 +507,12 @@ const ProcessingModal = ({
                     </div>
                   </div>
                   <div className="action-buttons w-[18%] flex flex-col justify-end items-end">
-                    <Button
+                    {/* <Button
                       size="lg"
                       className="w-full bg-naai-primary text-white rounded-md"
                     >
                       Details
-                    </Button>
+                    </Button> */}
                     {activeKey !== "" ? (
                       <Button
                         size="lg"

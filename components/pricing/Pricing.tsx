@@ -8,6 +8,7 @@ import { pricingAtom } from "@/lib/atoms/pricing";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
 import DropDownMenu from "./components/DropDownMenu";
 import axios from "axios";
+import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 
 const PricingInputArray = ["Qty", "Price", "GST", "Disc"];
 
@@ -48,17 +49,6 @@ const PricingInput = ({
       };
     });
   };
-
-  // const handleInputChange = (e: React.FormEvent<HTMLInputElement>) => {
-  //   console.log("CHECK from input ");
-  //   setPricing((prev) => {
-  //     // console.log(prev, "prev pricing");
-  //     return {
-  //       ...prev,
-  //       [name]: e.currentTarget.value,
-  //     };
-  //   });
-  // }
   
   return (
     <div className="flex gap-2 items-center">
@@ -78,8 +68,20 @@ const Pricing = () => {
   const  [customer, setCustomer] = useRecoilState(customerInfoAtom);
   const searchCustomer = useRef<HTMLInputElement>(null);
   const resetCustomer = useResetRecoilState(customerInfoAtom);
-  
+  const selectedServices = useRecoilValue(selectedServiceAtom);
+  const [servicePrice, setServicePrice] = useState<number> (0);
   const [showDropDown, setShowDropDown] = useState(false);
+
+  useEffect(() => {
+    if(selectedServices.length > 0){
+      let price = selectedServices.reduce((acc, curr) => {
+        return acc + curr.price;
+      }, 0);
+      setServicePrice(price);
+    }else{
+      setServicePrice(0);
+    }
+  }, [selectedServices])
 
   useEffect(() => {
     if (searchCustomer.current) {
@@ -123,7 +125,7 @@ const Pricing = () => {
   }
   return (
     <div className="h-[calc(100vh-1.5rem)] bg-naai-pos-200 w-[25%] relative">
-      <Price_display align = "right"/>
+      <Price_display align = "right" price={servicePrice}/>
       <ItemsTable />
       <div className="w-full bottom-0 absolute p-2">
         <input
