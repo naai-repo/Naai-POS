@@ -7,6 +7,6 @@ import { useRecoilValue } from "recoil";
 export default function Home() {
   const breadcrumbs = useRecoilValue(breadcrumbsAtom);
   return (
-    <CardDisplay titles={titleArr} breadcrumbs={breadcrumbs} />
+    <CardDisplay titles={titleArr} breadcrumbs={breadcrumbs} comingSoon={[false, true, true, true]} />
   );
 }

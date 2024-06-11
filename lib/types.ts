@@ -6,6 +6,7 @@ export interface title_cardProps {
   selectable?: boolean;
   serviceDetails?: extraInfoProps;
   displayModal?: boolean;
+  comingSoon?: boolean;
 }
 
 export interface BreadcrumbsProps {
@@ -38,6 +39,7 @@ export interface HomeProps {
   breadcrumbs: BreadcrumbsProps[];
   selectable?: boolean;
   extraInfo?: extraInfoProps[];
+  comingSoon?: boolean[];
 }
 
 export interface ArtistDisplayProps {

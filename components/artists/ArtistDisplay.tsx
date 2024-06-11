@@ -4,14 +4,19 @@ import { ArtistDisplayProps, SelectedServicesInterface } from "@/lib/types";
 import React from "react";
 import { useSetRecoilState } from "recoil";
 
-const ArtistDisplay: React.FC<ArtistDisplayProps> = ({
+interface ExtendedArtistDisplay extends ArtistDisplayProps{
+  onOpenChange: () => void;
+}
+
+const ArtistDisplay: React.FC<ExtendedArtistDisplay> = ({
   name,
   price,
   basePrice,
   serviceId,
   variableId,
   serviceName,
-  artistId
+  artistId,
+  onOpenChange,
 }) => {
   const setSelectedServices = useSetRecoilState(selectedServiceAtom);
   const handleClick = () => {
@@ -38,9 +43,10 @@ const ArtistDisplay: React.FC<ArtistDisplayProps> = ({
             },
           ];
     });
+    onOpenChange();
   };
   return (
-    <div className="flex content-between" onClick={handleClick}>
+    <div className="flex content-between cursor-pointer" onClick={handleClick}>
       <div className="flex-1">{name}</div>
       {price !== basePrice && <div className="flex-1">{price}</div>}
     </div>

@@ -62,7 +62,7 @@ const ItemsTable = () => {
                 <TableCell className="flex justify-center">
                   {service.qty}
                 </TableCell>
-                <TableCell>{service.price * service.qty}</TableCell>
+                <TableCell>{Math.round((service.price * service.qty) * 100)/100}</TableCell>
                 <TableCell>
                   {(service.price * service.qty * 0.18).toFixed(2)}
                 </TableCell>

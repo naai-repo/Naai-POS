@@ -20,6 +20,7 @@ import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import ArtistDisplay from "../artists/ArtistDisplay";
 import { SALONID, Urls } from "@/lib/api";
+import ComingSoonModal from "./ComingSoonModal";
 
 const getArtistsForService = async (serviceDetails: any) => {
   const response = await axios.post(
@@ -147,6 +148,7 @@ const ModalComponent = ({
                   variableId={serviceDetails._id === serviceDetails.serviceId ? null : serviceDetails._id}
                   serviceName={serviceDetails.serviceTitle}
                   artistId={artist.artistId}
+                  onOpenChange={onOpenChange}
                 />
               )
             )}
@@ -184,10 +186,12 @@ const Title_card: React.FC<title_cardProps> = ({
   selectable,
   serviceDetails,
   displayModal,
+  comingSoon = false,
 }) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const router = useRouter();
   const pathname = usePathname();
+  const [openComingSoon, setOpenComingSoon] = useState(false);
 
   const handleClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
     if(title.toLowerCase() === "men" || title.toLowerCase() === "women"){
@@ -203,11 +207,15 @@ const Title_card: React.FC<title_cardProps> = ({
       : router.push(`${pathname}/${title}`);
   };
 
+  const handleComingSoon = () => {
+    setOpenComingSoon(true);
+  };
+
   return (
     <>
       <div
         className="w-32 h-20 bg-naai-pos-500 flex items-center justify-center rounded-lg capitalize font-medium text-sm cursor-pointer text-center"
-        onClick={selectable || displayModal ? onOpen : handleClick}
+        onClick={comingSoon ? handleComingSoon : (selectable || displayModal ? onOpen : handleClick)}
       >
         <div className="title">{title}</div>
       </div>
@@ -216,6 +224,7 @@ const Title_card: React.FC<title_cardProps> = ({
         onOpenChange={onOpenChange}
         serviceDetails={serviceDetails}
       />
+      <ComingSoonModal openComingSoon={openComingSoon} setOpenComingSoon={setOpenComingSoon}/>
     </>
   );
 };
