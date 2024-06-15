@@ -77,7 +77,7 @@ const Pricing = () => {
       let price = selectedServices.reduce((acc, curr) => {
         return acc + curr.price;
       }, 0);
-      setServicePrice(price);
+      setServicePrice(price*1.18);
     }else{
       setServicePrice(0);
     }

@@ -1,6 +1,8 @@
 "use client";
+import { Urls } from "@/lib/api";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import { ArtistDisplayProps, SelectedServicesInterface } from "@/lib/types";
+import axios from "axios";
 import React from "react";
 import { useSetRecoilState } from "recoil";
 
@@ -19,7 +21,16 @@ const ArtistDisplay: React.FC<ExtendedArtistDisplay> = ({
   onOpenChange,
 }) => {
   const setSelectedServices = useSetRecoilState(selectedServiceAtom);
-  const handleClick = () => {
+  const handleClick = async () => {
+    let salonData = await axios.get(Urls.GetSalonData);
+    let taxIncluded = salonData.data.data.data.taxIncluded;
+    let tax = 0;
+    console.log("TAX: ", salonData.data.data.data.taxIncluded);
+    if(taxIncluded){
+      let priceExcludingTax = price / 1.18;
+      tax = Math.round((price - priceExcludingTax)*100)/100;
+      price = Math.round(priceExcludingTax*100)/100;
+    }
     setSelectedServices((prev: SelectedServicesInterface[]) => {
       return prev.some(
         (item) =>
@@ -38,6 +49,7 @@ const ArtistDisplay: React.FC<ExtendedArtistDisplay> = ({
               price,
               basePrice,
               artistId,
+              tax,
               qty: 1,
               disc: 0,
             },

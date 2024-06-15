@@ -12,6 +12,9 @@ import HoldServicesModal from "./HoldServicesModal";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
 import { holdDataAtom } from "@/lib/atoms/holdData";
 import { HoldDataInterface } from "@/lib/types";
+import { updatedSelectedServicesAtom } from "@/lib/atoms/updatedSelectedServices";
+import { UpdatedSelectedServicesEnum } from "@/lib/enums";
+import useResetAllState from "@/lib/hooks/useResetAllState";
 
 const OnScreenKeyboard = () => {
   const keysArr = [
@@ -43,9 +46,12 @@ const OnScreenKeyboard = () => {
   const [pricing, setPricing] = useRecoilState(pricingAtom);
   const resetPricing = useResetRecoilState(pricingAtom);
   const selectedTableIndex = useRecoilValue(selectedTableIndexAtom);
+  const resetSelectedTableIndex = useResetRecoilState(selectedTableIndexAtom)
   const customer = useRecoilValue(customerInfoAtom);
   const resetCustomer = useResetRecoilState(customerInfoAtom);
   const setHoldData = useSetRecoilState(holdDataAtom);
+  const setUpdatedSelectedServices = useSetRecoilState(updatedSelectedServicesAtom);
+  const {resetAllState} = useResetAllState();
   useEffect(() => {
     const inputs = document.querySelectorAll("input");
     function selectInputTags() {
@@ -62,15 +68,10 @@ const OnScreenKeyboard = () => {
   const handleNumClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const value = e.currentTarget.dataset.key;
     if (value === "close") {
-      setSelectedServices([]);
-      setPricing({
-        Qty: undefined,
-        Price: undefined,
-        GST: undefined,
-        Disc: undefined,
-      });
+      resetAllState();
       return;
     } else if (value === "update") {
+      setUpdatedSelectedServices(UpdatedSelectedServicesEnum.Updated);
       setSelectedServices((prev) => {
         const newSelectedServices = prev.map((item, index) => {
           if (index === selectedTableIndex) {
@@ -78,6 +79,7 @@ const OnScreenKeyboard = () => {
               ...item,
               qty: pricing.Qty ?? 0,
               price: (pricing.Price ?? item.price) - (pricing.Disc ?? 0),
+              tax: ((pricing.Price ?? item.price) - (pricing.Disc ?? 0)) * 0.18,
               disc: pricing.Disc ?? 0,
             };
           }
@@ -86,6 +88,8 @@ const OnScreenKeyboard = () => {
         console.log("NEW: ", newSelectedServices);
         return newSelectedServices;
       });
+      resetPricing();
+      resetSelectedTableIndex();
       return;
     }
 

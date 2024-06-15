@@ -3,3 +3,9 @@ export enum Gender{
     WOMEN = "female",
     UNISEX = "unisex"
 }
+
+export enum UpdatedSelectedServicesEnum {
+    Initial = "initial",
+    Updated = "updated",
+    NotUpdated = "notUpdated",
+}
