@@ -62,6 +62,7 @@ export interface PricingAtomInterface {
 export interface SelectedServicesInterface extends ArtistDisplayProps {
   qty: number;
   disc: number;
+  tax: number;
 }
 
 export type genderType = "men" | "women" | "unisex" | undefined;

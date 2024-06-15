@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -21,28 +21,41 @@ import {
   TableCell,
 } from "@nextui-org/react";
 import OnScreenKeyboardModal from "./components/OnScreenKeyboardModal";
-import { CouponInterface, PaymentsInterface, SelectedServicesInterface } from "@/lib/types";
+import {
+  CouponInterface,
+  PaymentsInterface,
+  SelectedServicesInterface,
+} from "@/lib/types";
 import RemarksModal from "./components/RemarksModal";
-import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from "recoil";
+import {
+  useRecoilState,
+  useRecoilValue,
+  useResetRecoilState,
+  useSetRecoilState,
+} from "recoil";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import axios from "axios";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
 import { SALONID, Urls } from "@/lib/api";
 import { couponAtom } from "@/lib/atoms/coupons";
 import useResetAllState from "@/lib/hooks/useResetAllState";
+import { updatedSelectedServicesAtom } from "@/lib/atoms/updatedSelectedServices";
+import { UpdatedSelectedServicesEnum } from "@/lib/enums";
 
 const DisplayBillInfo = ({
   title,
   value,
   money = false,
+  text = "xs"
 }: {
   title: string;
   value: number | string;
   money?: boolean;
+  text?:String
 }) => {
   return (
     <div className="display-bill-info-component flex justify-between items-center px-4">
-      <div className="title-name text-xs capitalize">{title}</div>
+      <div className={`title-name text-${text} capitalize`}>{title}</div>
       <div className="value">
         {money ? value.toLocaleString("en-In", currencyOptions) : value}
       </div>
@@ -55,13 +68,15 @@ const DisplayInfoWithInbox = ({
   dropDown = false,
   options = [],
   setState,
-  id=undefined
+  id = undefined,
+  inputRef = undefined
 }: {
   title: string;
   dropDown?: boolean;
   options?: string[];
   setState: React.Dispatch<React.SetStateAction<number | string>>;
   id?: string;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }) => {
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState(e.target.value);
@@ -84,7 +99,13 @@ const DisplayInfoWithInbox = ({
             ))}
           </select>
         ) : (
-          <input type="number" min={0} onChange={handleOnChange} id={id? id : undefined}/>
+          <input
+            type="number"
+            min={0}
+            onChange={handleOnChange}
+            id={id ? id : undefined}
+            ref={inputRef}
+          />
         )}
       </div>
     </div>
@@ -114,13 +135,17 @@ const ProcessingModal = ({
   const [totalQty, setTotalQty] = useState<number>(0);
   const [coupon, setCoupon] = useState("");
   const selectedServices = useRecoilValue(selectedServiceAtom);
-  const setSelectedServices = useSetRecoilState(selectedServiceAtom)
+  const setSelectedServices = useSetRecoilState(selectedServiceAtom);
   const customer = useRecoilValue(customerInfoAtom);
   const [selectedCoupon, setSelectedCoupon] = useRecoilState(couponAtom);
   const [amountPaid, setAmountPaid] = useState(0);
   const resetSelectedCoupon = useResetRecoilState(couponAtom);
-  const {resetAllState} = useResetAllState();
+  const { resetAllState } = useResetAllState();
   const couponRef = React.useRef<HTMLInputElement>(null);
+  const [initialSelectedServices, setInitialSelectedServices] = useState<SelectedServicesInterface[]>([]);
+  const [updatedSelectedServices, setUpdatedSelectedServices] = useRecoilState(updatedSelectedServicesAtom);
+  const percentDiscRef = useRef<HTMLInputElement>(null);
+  const cashDiscRef = useRef<HTMLInputElement>(null);
   // const [salonDiscount, setSalonDiscount] = useState<number | string>(0);
 
   useEffect(() => {
@@ -130,39 +155,107 @@ const ProcessingModal = ({
   }, [selectedCoupon, isOpen]);
 
   useEffect(() => {
-    let total : number = 0;
+    let total: number = 0;
     payments.forEach((payment) => {
       total += Number(payment.amount);
     });
     setAmountPaid(total);
-  }, [payments])
+  }, [payments]);
+
+  useEffect(() => {
+    if(!percentDiscRef.current || !cashDiscRef.current) return;
+    percentDiscRef.current.value = percentDisc.toString();
+    cashDiscRef.current.value = cashDisc.toString();
+  }, [percentDiscRef, cashDiscRef, percentDisc, cashDisc, isOpen]);
+
+  // itemprice -> excluding gst
+  // first calculate totalItemPrice 
+  // price after discount = totalItemPrice - discount
+  // tax = (price after discount) * 0.18
+  // final price = price after discount + tax
+  // propotionally calculate price for each service
 
   useEffect(() => {
     function divideCashDiscount(){
-      let totalDiscount:number = Number(cashDisc) + Number(percentCashDisc) + selectedCoupon.couponDiscount;
-      let newSelectedServices : SelectedServicesInterface[] = [] as SelectedServicesInterface[];
       let totalItemPrice = 0;
-      selectedServices.map((service) => {
-        totalItemPrice += service.price * service.qty;
+      initialSelectedServices.map((service) => {
+        totalItemPrice += service.price * service.qty; //total item price excluding gst
       });
-      selectedServices.map((service) => {
-        let discount = (service.price / totalItemPrice) * totalDiscount;
-        let newService = {
-          ...service,
-          price: service.basePrice - discount,
-          disc: discount
-        }
-        newSelectedServices.push(newService);
+      let totalItemPriceWithGst = totalItemPrice * 1.18;
+      let totalDiscount = Number(cashDisc) + Number(percentCashDisc) + selectedCoupon.couponDiscount;
+      let priceAfterDiscount = totalItemPriceWithGst - totalDiscount;
+      setFinalAmount(Math.round((priceAfterDiscount)*100)/100);
+      priceAfterDiscount = priceAfterDiscount / 1.18;
+      let totalTax = priceAfterDiscount * 0.18;
+      setTotalGst(totalTax);
+
+      setSelectedServices((prev) => {
+        const newSelectedServices = prev.map((service, index) => {
+          let item = initialSelectedServices[index];
+          let discount = item.price - ((item.price / totalItemPrice) * priceAfterDiscount);
+          let newService = {
+            ...item,
+            price: item.price - discount,
+            disc: item.disc + discount,
+            tax: (item.price - discount) * 0.18,
+          };
+          return newService;
+        });
+        return newSelectedServices;
       });
-      setSelectedServices(newSelectedServices);
     }
     divideCashDiscount();
-  }, [cashDisc, percentCashDisc, percentDisc, selectedCoupon.couponDiscount]);
+  }, [cashDisc, percentCashDisc, selectedCoupon.couponDiscount, initialSelectedServices])
+
+  // useEffect(() => {
+  //   function divideCashDiscount() {
+  //     let totalDiscount: number =
+  //       Number(cashDisc) +
+  //       Number(percentCashDisc) +
+  //       selectedCoupon.couponDiscount;
+  //     let totalItemPrice = 0;
+      
+  //     initialSelectedServices.map((service) => {
+  //       totalItemPrice += service.price * service.qty;
+  //     });
+
+  //     setSelectedServices((prev) => {
+  //       const newSelectedServices = prev.map((service, index) => {
+  //         let item = initialSelectedServices[index];
+  //         let discount = (item.price / totalItemPrice) * totalDiscount;
+  //         let newService = {
+  //           ...item,
+  //           price: item.price - discount,
+  //           disc: item.disc + discount,
+  //           tax: (item.price - discount) * 0.18,
+  //         };
+  //         return newService;
+  //       });
+  //       return newSelectedServices;
+  //     });
+  //   }
+  //   divideCashDiscount();
+  // }, [cashDisc, percentCashDisc, selectedCoupon.couponDiscount]);
+
+  // console.log("DATA: ", selectedServices);
 
   // useEffect(() => {
   //   let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - Number(cashDisc || 0) - amountPaid - percentCashDisc;
   //   setFinalAmount(newAmount - Number(salonDiscount));
   // }, [salonDiscount]);
+
+  useEffect(() => {
+    if(updatedSelectedServices !== UpdatedSelectedServicesEnum.NotUpdated){
+      console.log("INITITAL: ", selectedServices)
+      setInitialSelectedServices(selectedServices);
+    }
+  }, [selectedServices.length , updatedSelectedServices]);
+
+  useEffect(() => {
+    if(updatedSelectedServices === UpdatedSelectedServicesEnum.Updated){
+      setUpdatedSelectedServices(UpdatedSelectedServicesEnum.NotUpdated);
+    }
+  }, [updatedSelectedServices])
 
   useEffect(() => {
     let totalBasePrice = 0;
@@ -177,27 +270,43 @@ const ProcessingModal = ({
     });
     setOriginalBillValue(totalBasePrice);
     setItemTotal(totalItemPrice);
-    setTotalGst(totalGST);
-    setFinalAmount(totalItemPrice + totalGST);
+    // setTotalGst(totalGST);
+    setFinalAmount(Math.round((totalItemPrice + totalGST)*100)/100);
     setTotalQty(totalQuantity);
     setUniqueItems(selectedServices.length);
-
+    if(selectedServices.length === 0){
+      setFinalAmount(0);
+      setCashDisc(0);
+      setPercentCashDisc(0);
+      setPercentDisc(0);
+      setPayments([]);
+      setAmountPaid(0);
+      resetSelectedCoupon();
+    }
   }, [selectedServices]);
 
-  // useEffect(() => {
-  //   let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - percentCashDisc - amountPaid;
-  //   setFinalAmount(newAmount -  Number(cashDisc));    
-  // }, [cashDisc, itemTotal, totalGst]);
+  useEffect(() => {
+    let newAmount =
+      itemTotal +
+      totalGst -
+      selectedCoupon.couponDiscount -
+      percentCashDisc -
+      amountPaid;
+    setFinalAmount(Math.round((newAmount - Number(cashDisc))*100)/100);
+  }, [cashDisc]);
 
-  // useEffect(() => {
-  //   let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - Number(cashDisc || 0) - amountPaid;
-  //   setFinalAmount(
-  //     (prev) => (
-  //       setPercentCashDisc((Number(percentDisc) * newAmount) / 100),
-  //       newAmount - (Number(percentDisc) * newAmount) / 100
-  //     )
-  //   );
-  // }, [percentDisc, itemTotal, totalGst]);
+  useEffect(() => {
+    const debounceTime = setTimeout(() => {
+      setFinalAmount(
+        (prev) => (
+          console.log(prev),
+          setPercentCashDisc((Number(percentDisc) * prev) / 100),
+          Math.round((prev - (Number(percentDisc) * prev) / 100)*100)/100
+        )
+      );
+    }, 500);
+    return () => clearTimeout(debounceTime);
+  }, [percentDisc]);
 
   const handleAddingPayments = () => {
     setPayments([
@@ -209,7 +318,7 @@ const ProcessingModal = ({
         remarks: "",
       },
     ]);
-    setFinalAmount((prev) => prev - Number(cashAmount));
+    setFinalAmount((prev) => {console.log(prev-Number(cashAmount)); return Math.round((prev - Number(cashAmount))*100)/100});
     let cashInput = document.getElementById("cash-amt") as HTMLInputElement;
     cashInput.value = "";
   };
@@ -225,7 +334,7 @@ const ProcessingModal = ({
         if (payments[index].id.toString() !== activeKey) {
           newPayments.push(payments[index]);
         } else {
-          setFinalAmount((prev) => prev + Number(payments[index].amount));
+          setFinalAmount((prev) => Math.round((prev + Number(payments[index].amount))*100)/100);
         }
       }
       for (let index in newPayments) {
@@ -242,7 +351,7 @@ const ProcessingModal = ({
       totalPrice += Number(payment.amount);
     });
     setPayments([]);
-    setFinalAmount((prev) => prev + totalPrice);
+    setFinalAmount((prev) => Math.round((prev + totalPrice)*100)/100);
   };
 
   const handleProcessButton = async () => {
@@ -251,24 +360,21 @@ const ProcessingModal = ({
       setOpenProcessModal(false);
       return;
     }
-    let data = await axios.post(
-      Urls.AddWalkinBooking,
-      {
-        salon: SALONID,
-        selectedServices: selectedServices,
-        customer: customer,
-        bill: {
-          originalAmount: originalBillValue * 1.18,
-          finalInvoiceAmount: finalAmount,
-          cashDisc: cashDisc,
-          percentDisc: percentDisc,
-          gst: totalGst,
-          percentCashDisc: percentCashDisc,
-        },
-        payments: payments,
-        coupon: selectedCoupon,
-      }
-    );
+    let data = await axios.post(Urls.AddWalkinBooking, {
+      salon: SALONID,
+      selectedServices: selectedServices,
+      customer: customer,
+      bill: {
+        originalAmount: originalBillValue * 1.18,
+        finalInvoiceAmount: finalAmount,
+        cashDisc: cashDisc,
+        percentDisc: percentDisc,
+        gst: totalGst,
+        percentCashDisc: percentCashDisc,
+      },
+      payments: payments,
+      coupon: selectedCoupon,
+    });
     console.log("Processing Payments");
     resetAllState(); // Reset all states
     setFinalAmount(0);
@@ -278,10 +384,15 @@ const ProcessingModal = ({
     setPayments([]);
     setAmountPaid(0);
     setOpenProcessModal(false);
+    setInitialSelectedServices([]);
   };
 
   const handleAddingCoupons = async () => {
     try {
+      if(selectedCoupon.code){
+        alert("Coupon Already Applied");
+        return;
+      }
       let res = await axios.get(
         `${Urls.FetchCoupon}?code=${coupon}&salonId=000000000000000000000000`
       );
@@ -311,13 +422,13 @@ const ProcessingModal = ({
       }
       let discountValue = finalAmount * (newCoupon.discount / 100);
       if (discountValue > newCoupon.max_value) {
-        setFinalAmount(finalAmount - newCoupon.max_value - amountPaid);
+        setFinalAmount(Math.round((finalAmount - newCoupon.max_value - amountPaid)*100)/100);
         newCoupon = {
           ...newCoupon,
           couponDiscount: newCoupon.max_value,
         };
       } else {
-        setFinalAmount(finalAmount - discountValue - amountPaid);
+        setFinalAmount(Math.round((finalAmount - discountValue - amountPaid)*100)/100);
         newCoupon = {
           ...newCoupon,
           couponDiscount: discountValue,
@@ -327,15 +438,15 @@ const ProcessingModal = ({
       setSelectedCoupon(newCoupon);
     } catch (err) {
       console.log(err);
-      throw err;
+      alert("Invalid Coupon Code");
     }
   };
 
   const handleCancelingCoupons = () => {
-    setFinalAmount(finalAmount + selectedCoupon.couponDiscount);
+    setFinalAmount(Math.round((finalAmount + selectedCoupon.couponDiscount)*100)/100);
     resetSelectedCoupon();
     setCoupon("");
-  }
+  };
 
   return (
     <>
@@ -411,7 +522,10 @@ const ProcessingModal = ({
                       >
                         <Check color="green" />
                       </div>
-                      <div className="cross-mark h-7 w-7 grid place-items-center shadow-md" onClick={handleCancelingCoupons}>
+                      <div
+                        className="cross-mark h-7 w-7 grid place-items-center shadow-md"
+                        onClick={handleCancelingCoupons}
+                      >
                         <X color="red" />
                       </div>
                     </div>
@@ -430,10 +544,12 @@ const ProcessingModal = ({
                       <DisplayInfoWithInbox
                         title="Percent %"
                         setState={setPercentDisc}
+                        inputRef={percentDiscRef}
                       />
                       <DisplayInfoWithInbox
                         title="cash"
                         setState={setCashDisc}
+                        inputRef={cashDiscRef}
                       />
                       {/* <DisplayInfoWithInbox
                         title="Roundoff"
@@ -500,6 +616,14 @@ const ProcessingModal = ({
                         title="wallet mem. amount"
                         value={0}
                         money={true}
+                      />
+                    </div>
+                    <div className="amount-paid border border-black py-7">
+                      <DisplayBillInfo
+                        title="amount paid"
+                        value={amountPaid}
+                        money={true}
+                        text="md"
                       />
                     </div>
                     <div className="keyboard-container relative mt-2">
