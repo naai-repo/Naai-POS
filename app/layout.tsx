@@ -5,7 +5,8 @@ import Header from "@/components/header/Header";
 import Pricing from "@/components/pricing/Pricing";
 import Action_Buttons from "@/components/action-buttons/Action_Buttons";
 import Main_Section from "@/components/main/Main_Section";
-import RecoilContextProvider from "./RecoilContextProvider";
+import CookieProvider from "./CookieProvider";
+import ClientProvider from "./ClientProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,17 +20,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log("HELLO");
   return (
     <html lang="en">
       <body className={inter.className}>
-        <RecoilContextProvider>        
-          <Header />
-          <div className="flex w-screen">
-            <Pricing />
-            <Main_Section>{children}</Main_Section>
-            <Action_Buttons />
-          </div>
-        </RecoilContextProvider>
+        <CookieProvider>
+          <ClientProvider>
+            <Header />
+            <div className="flex w-screen">
+              <Pricing />
+              <Main_Section>{children}</Main_Section>
+              <Action_Buttons />
+            </div>
+          </ClientProvider>
+        </CookieProvider>
       </body>
     </html>
   );
