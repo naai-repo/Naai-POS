@@ -4,8 +4,9 @@ import { CustomerInfoInterface } from "@/lib/types";
 import axios from "axios";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
-import { SALONID, Urls } from "@/lib/api";
+import { Urls } from "@/lib/api";
 import EnterUserDetails from "./EnterUserDetails";
+import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 
 const DropDownMenu = ({
   setShowDropDown,
@@ -17,6 +18,7 @@ const DropDownMenu = ({
     CustomerInfoInterface[] | []
   >([]);
   const [showInputModal, setShowInputModal] = useState(false);
+  const SALONID = useRecoilValue(salonIdAtom);
   useEffect(() => {
     async function getCustomersList() {
       let response = await axios.get(

@@ -1,12 +1,13 @@
+'use client'
 import CardDisplay from "@/components/main/components/CardDisplay";
-import { SALONID } from "@/lib/api";
+import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 import { Gender } from "@/lib/enums";
 import { genderType } from "@/lib/types";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 
-const salonId = SALONID;
-
-async function getServiceCategories(gender: genderType) {
+async function getServiceCategories(gender: genderType, salonId: string) {
   if(!gender){
     throw new Error("Please select a valid gender")
   }
@@ -30,8 +31,18 @@ async function getServiceCategories(gender: genderType) {
   return data;
 }
 
-const Page = async ({ params }: { params: { gender: genderType } }) => {
-  const serviceCategories = await getServiceCategories(params.gender);
+const Page = ({ params }: { params: { gender: genderType } }) => {
+  const salonId = useRecoilValue(salonIdAtom);
+  const [serviceCategories, setServiceCategories] = useState([]);
+  // const serviceCategories = await getServiceCategories(params.gender, salonId);
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getServiceCategories(params.gender, salonId);
+      setServiceCategories(data);
+    }
+    fetchData();
+  }, [params.gender, salonId]);
+  
   return (
     <CardDisplay
       titles={serviceCategories}

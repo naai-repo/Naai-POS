@@ -19,10 +19,12 @@ import {
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import ArtistDisplay from "../artists/ArtistDisplay";
-import { SALONID, Urls } from "@/lib/api";
+import { Urls } from "@/lib/api";
 import ComingSoonModal from "./ComingSoonModal";
+import { useRecoilValue } from "recoil";
+import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 
-const getArtistsForService = async (serviceDetails: any) => {
+const getArtistsForService = async (serviceDetails: any, SALONID:string) => {
   const response = await axios.post(
     Urls.GetArtistList,
     {
@@ -69,13 +71,14 @@ const ModalComponent = ({
   serviceDetails?: any;
 }) => {
   const [artists, setArtists] = useState([]);
+  const SALONID = useRecoilValue(salonIdAtom);
   useEffect(() => {
     const getArtists = async () => {
-      const data = await getArtistsForService(serviceDetails);
+      const data = await getArtistsForService(serviceDetails, SALONID);
       setArtists(data);
     };
     getArtists();
-  }, [serviceDetails]);
+  }, [SALONID, serviceDetails]);
 
   const currencyOptions = {
     style: "currency",

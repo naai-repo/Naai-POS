@@ -1,13 +1,13 @@
+'use client'
 import CardDisplay from "@/components/main/components/CardDisplay";
-import { SALONID } from "@/lib/api";
+import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 import { Gender } from "@/lib/enums";
 import { genderType } from "@/lib/types";
 import axios from "axios";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 
-const salonId = SALONID;
-
-async function getServicesFromCategories(serviceName: string , gender: genderType) {
+async function getServicesFromCategories(serviceName: string , gender: genderType, salonId: string) {
   if(!gender){
     throw new Error("Please select a valid gender")
   }
@@ -46,11 +46,22 @@ async function getServicesFromCategories(serviceName: string , gender: genderTyp
   return { data, extraInfo };
 }
 
-const page = async ({ params }: { params: { serviceName: string, gender: genderType } }) => {
-  const { data, extraInfo } = await getServicesFromCategories(
-    params.serviceName,
-    params.gender
-  );
+const Page = ({ params }: { params: { serviceName: string, gender: genderType } }) => {
+  const salonId = useRecoilValue(salonIdAtom);
+  const [data, setData] = useState([]);
+  const [extraInfo, setExtraInfo] = useState([]);
+  useEffect(() => {
+    async function fetchData() {
+      const { data, extraInfo } = await getServicesFromCategories(
+        params.serviceName,
+        params.gender,
+        salonId
+      );
+      setData(data);
+      setExtraInfo(extraInfo);
+    }
+    fetchData();
+  }, [params.gender, params.serviceName, salonId])
 
   return (
     <CardDisplay
@@ -69,4 +80,4 @@ const page = async ({ params }: { params: { serviceName: string, gender: genderT
   );
 };
 
-export default page;
+export default Page;

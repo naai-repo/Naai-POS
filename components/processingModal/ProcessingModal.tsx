@@ -36,11 +36,12 @@ import {
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import axios from "axios";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
-import { SALONID, Urls } from "@/lib/api";
+import { Urls } from "@/lib/api";
 import { couponAtom } from "@/lib/atoms/coupons";
 import useResetAllState from "@/lib/hooks/useResetAllState";
 import { updatedSelectedServicesAtom } from "@/lib/atoms/updatedSelectedServices";
 import { UpdatedSelectedServicesEnum } from "@/lib/enums";
+import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 
 const DisplayBillInfo = ({
   title,
@@ -146,6 +147,7 @@ const ProcessingModal = ({
   const [updatedSelectedServices, setUpdatedSelectedServices] = useRecoilState(updatedSelectedServicesAtom);
   const percentDiscRef = useRef<HTMLInputElement>(null);
   const cashDiscRef = useRef<HTMLInputElement>(null);
+  const SALONID = useRecoilValue(salonIdAtom);
   // const [salonDiscount, setSalonDiscount] = useState<number | string>(0);
 
   useEffect(() => {

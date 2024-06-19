@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { RadioGroup, Radio, Button } from "@nextui-org/react";
 import axios from "axios";
-import { SALONID, Urls } from "@/lib/api";
-import { useRecoilState } from "recoil";
+import { Urls } from "@/lib/api";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { customerInfoAtom } from "@/lib/atoms/customerInfo";
+import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 
 const EnterUserDetails = ({
   setShowInputModal,
@@ -15,6 +16,7 @@ const EnterUserDetails = ({
   const [userName, setUserName] = useState("");
   const [gender, setGender] = useState("");
   const [customer, setCustomer] = useRecoilState(customerInfoAtom);
+  const SALONID = useRecoilValue(salonIdAtom);
   const handleAddingUser = async () => {
     let response = await axios.post(Urls.AddWalkinUser, {
       phoneNumber: customer.phoneNumber,
