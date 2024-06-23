@@ -4,8 +4,6 @@
 // For Production
 const baseUrl = "https://dev.naai.in";
 
-
-
 export enum Urls {
   GetSingleService = `${baseUrl}/partner/service/single/`,
   GetArtistList = `${baseUrl}/appointments/singleArtist/list`,
@@ -14,4 +12,6 @@ export enum Urls {
   AddWalkinBooking = `${baseUrl}/partner/walkin/add/booking`,
   FetchCoupon = `${baseUrl}/coupons/fetch`,
   AddWalkinUser = `${baseUrl}/partner/walkin/add/user`,
+  SearchingServices = `${baseUrl}/pos/search/services`,
+  GetArtistInfo = `${baseUrl}/partner/artist/single`
 }

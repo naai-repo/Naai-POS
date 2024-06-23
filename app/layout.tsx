@@ -7,6 +7,7 @@ import Action_Buttons from "@/components/action-buttons/Action_Buttons";
 import Main_Section from "@/components/main/Main_Section";
 import CookieProvider from "./CookieProvider";
 import ClientProvider from "./ClientProvider";
+import RecoilContextProvider from "./RecoilContextProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,14 +26,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <CookieProvider>
-          <ClientProvider>
-            <Header />
-            <div className="flex w-screen">
-              <Pricing />
-              <Main_Section>{children}</Main_Section>
-              <Action_Buttons />
-            </div>
-          </ClientProvider>
+          <Header />
+          <div className="flex w-screen overflow-hidden">
+            {/* <Action_Buttons /> */}
+            <Main_Section>{children}</Main_Section>
+            <Pricing />
+          </div>
         </CookieProvider>
       </body>
     </html>
