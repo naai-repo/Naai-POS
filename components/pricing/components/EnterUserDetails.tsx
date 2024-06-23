@@ -35,21 +35,23 @@ const EnterUserDetails = ({
     setShowDropDown(false);
   };
   return (
-    <div className="p-2">
+    <div className="p-2 overflow-y-scroll pb-8">
       <input
         type="text"
         className="px-2 border w-full mb-2"
         placeholder="Enter Name"
         onChange={(e) => setUserName(e.target.value)}
       />
-      <RadioGroup label="Gender" onChange={(e) => setGender(e.target.value)}>
-        <Radio value="male">Male</Radio>
-        <Radio value="female">Female</Radio>
-      </RadioGroup>
-      <div className="add-btn-container w-full flex justify-end">
-        <Button size="sm" color="primary" onClick={handleAddingUser}>
-          Add
-        </Button>
+      <div className="flex">
+        <RadioGroup label="Gender" onChange={(e) => setGender(e.target.value)}>
+          <Radio value="male">Male</Radio>
+          <Radio value="female">Female</Radio>
+        </RadioGroup>
+        <div className="add-btn-container w-full flex flex-row justify-end items-end">
+          <Button size="sm" color="primary" onClick={handleAddingUser}>
+            Add
+          </Button>
+        </div>
       </div>
     </div>
   );

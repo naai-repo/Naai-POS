@@ -192,7 +192,7 @@ const ProcessingModal = ({
       setTotalGst(totalTax);
 
       setSelectedServices((prev) => {
-        const newSelectedServices = prev.map((service, index) => {
+        const newSelectedServices = prev.map((_, index) => {
           let item = initialSelectedServices[index];
           let discount = item.price - ((item.price / totalItemPrice) * priceAfterDiscount);
           let newService = {

@@ -68,23 +68,23 @@ export interface SelectedServicesInterface extends ArtistDisplayProps {
 export type genderType = "men" | "women" | "unisex" | undefined;
 
 export interface PaymentsInterface {
-  id: number, 
-  type: string,
-  amount: number,
-  remarks: string,
+  id: number;
+  type: string;
+  amount: number;
+  remarks: string;
 }
 
 export interface CustomerInfoInterface {
   name: string;
   phoneNumber: string;
   id: string;
-  gender: string
+  gender: string;
 }
 
 export interface HoldDataInterface {
   title: string;
   selectedServices: SelectedServicesInterface[];
-  customerInfo: CustomerInfoInterface
+  customerInfo: CustomerInfoInterface;
 }
 
 export interface CouponInterface {
@@ -92,9 +92,27 @@ export interface CouponInterface {
   code: string;
   discount: number;
   expiryDate: Date;
-  salonId: string,
+  salonId: string;
   min_cart_value: number;
   max_value: number;
   isActive: boolean;
   couponDiscount: number;
+}
+
+export interface ServiceSelectedInterface {
+  cutPrice: number;
+  serviceId: string;
+  serviceTitle: string;
+  avgTime?: number;
+  basePrice?: number;
+  category?: string;
+  productsUsed?: any[];
+  targetGender?: string;
+  variables?: variableProps[];
+  variableCutPrice?: number;
+  variableName?: string;
+  variablePrice?: number;
+  variableTime?: number;
+  variableType?: string;
+  _id?: string;
 }

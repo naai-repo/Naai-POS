@@ -29,7 +29,7 @@ export default function Home() {
       if (!salonId) {
         throw new Error("Authentication Error: Salon Id not found in cookies");
       }
-      setSalonId(salonId as string);
+      // setSalonId(salonId as string);
     }
     settingSalonId();
   }, []);

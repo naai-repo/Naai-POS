@@ -10,7 +10,7 @@ import DropDownMenu from "./components/DropDownMenu";
 import axios from "axios";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 
-const PricingInputArray = ["Qty", "Price", "GST", "Disc"];
+const PricingInputArray = ["Qty", "Price", "Disc"];
 
 const CustomerDetail = ({
   detail,
@@ -57,7 +57,7 @@ const PricingInput = ({
         onChange={handleOnchange}
         // onInputCapture={handleInputChange}
         ref={inputRef}
-        className="w-3/4"
+        className="w-3/4 rounded-md"
       />
     </div>
   );
@@ -124,10 +124,10 @@ const Pricing = () => {
     })
   }
   return (
-    <div className="h-[calc(100vh-1.5rem)] bg-naai-pos-200 w-[25%] relative">
-      <Price_display align = "right" price={servicePrice}/>
+    <div className="h-[calc(100vh-1.5rem)] bg-naai-pos-200 w-[60%] relative">
       <ItemsTable />
-      <div className="w-full bottom-0 absolute p-2">
+      <div className="w-full bottom-0 absolute p-2 pb-7">
+        <Price_display align = "right" price={servicePrice}/>
         <input
           className="bg-white min-h-3 h-6 rounded-md p-2 text-sm w-full"
           placeholder="Search Customer (Phone No.)"
@@ -137,13 +137,13 @@ const Pricing = () => {
           autoComplete="off"
         />
         {showDropDown && <DropDownMenu setShowDropDown={setShowDropDown} />}
-        <div className="grid p-3 grid-rows-2 grid-cols-2">
+        {/* <div className="grid p-3 grid-rows-2 grid-cols-2">
           <CustomerDetail detail="Pending" value="--" />
           <CustomerDetail detail="Advance" value="--" />
           <CustomerDetail detail="Last Visit" value="--" />
           <CustomerDetail detail="Membership" value="--" />
-        </div>
-        <div className="grid p-3 grid-rows-2 grid-cols-2 gap-y-2 gap-x-2">
+        </div> */}
+        <div className="grid mt-6 p-3 grid-rows-2 grid-cols-2 gap-y-2 gap-x-2">
           {PricingInputArray.map((input) => (
             <PricingInput
               key={input}
