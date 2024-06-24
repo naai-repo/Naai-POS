@@ -136,13 +136,20 @@ const OnScreenKeyboard = () => {
   // on-screen-keyboard-container grid grid-rows-[repeat(3,minmax(0,4rem))] grid-cols-[repeat(5,minmax(0,4rem))] gap-4 relative bottom-4 ml-4
 
   return (
-    <div className="flex w-full justify-between">
-      <div className="on-screen-keyboard-parent">
-        <div className="on-screen-keyboard-container grid grid-rows-[repeat(2,minmax(0,4rem))] grid-cols-[repeat(2,minmax(0,6rem))] gap-4 relative bottom-4 ml-4">
+    <div className="flex w-full justify-between relative bottom-0">
+      <div className="on-screen-keyboard-parent w-full">
+        <div className="on-screen-keyboard-container flex justify-between relative ml-4">
+          <HoldServicesModal isOpen={openHoldModal} setOpenHoldModal={setOpenHoldModal}/>
+          <Button className="h-[4rem] w-[7.5rem] rounded-md flex justify-center items-center bg-yellow-400 drop-shadow-md cursor-pointer mr-4" onClick={() => setOpenHoldModal(true)}>
+            <RefreshCcw /> Load{" "}
+          </Button>
+          <Button className="h-[4rem] w-[7.5rem] rounded-md flex justify-center items-center bg-pink-400 drop-shadow-md cursor-pointer mr-4" onClick={handleHoldFunction}>
+            <PackageOpen /> Hold{" "}
+          </Button>
           {keysArr.map((key) => (
             <div
               key={key}
-              className="flex justify-center items-center bg-naai-pos-500 drop-shadow-md cursor-pointer rounded-md"
+              className={`flex justify-center items-center w-[7.5rem] bg-naai-pos-500 drop-shadow-md cursor-pointer rounded-md h-[4rem] mr-4" + ${(key === "close" ? "bg-red-400" : "bg-blue-400")}`}
               onClick={handleNumClick}
               data-key={key}
             >
@@ -155,20 +162,13 @@ const OnScreenKeyboard = () => {
               )}
             </div>
           ))}
+          <Button className="h-[4rem] w-[7.5rem] rounded-md flex justify-center items-center bg-green-400 drop-shadow-md cursor-pointer mr-4" onClick={() => setOpenProcessModal(true)}>
+            <HandCoins /> Process{" "}
+            <ProcessingModal isOpen={openProcessModal} setOpenProcessModal={setOpenProcessModal} />
+          </Button>
         </div>
       </div>
       <div className="loading-buttons-container flex">
-        <HoldServicesModal isOpen={openHoldModal} setOpenHoldModal={setOpenHoldModal}/>
-        <Button className="h-[4rem] rounded-md flex justify-center items-center bg-naai-pos-500 drop-shadow-md cursor-pointer mr-4" onClick={handleHoldFunction}>
-          <PackageOpen /> Hold{" "}
-        </Button>
-        <Button className="h-[4rem] rounded-md flex justify-center items-center bg-naai-pos-500 drop-shadow-md cursor-pointer mr-4" onClick={() => setOpenHoldModal(true)}>
-          <RefreshCcw /> Load{" "}
-        </Button>
-        <Button className="h-[4rem] rounded-md flex justify-center items-center bg-naai-pos-500 drop-shadow-md cursor-pointer mr-4" onClick={() => setOpenProcessModal(true)}>
-          <HandCoins /> Process{" "}
-          <ProcessingModal isOpen={openProcessModal} setOpenProcessModal={setOpenProcessModal} />
-        </Button>
       </div>
     </div>
   );

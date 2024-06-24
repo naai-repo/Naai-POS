@@ -63,7 +63,8 @@ const ItemsTable = () => {
         classNames={{
           td: "truncate",
           base: "max-h-[520px] overflow-y-auto",
-          tr: "mb-2",
+          tr: "mb-2 border-b-2",
+          th: "bg-gray-300 border-b-0",
         }}
       >
         <TableHeader columns={columns}>
