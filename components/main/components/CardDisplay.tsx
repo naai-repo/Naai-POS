@@ -81,7 +81,7 @@ const CardDisplay: React.FC<HomeProps> = ({
   };
 
   return (
-    <div className="home-parent px-4 py-6 pt-2 h-2/3">
+    <div className="home-parent px-4 py-6 pt-2 h-full">
       {/* <div className="breadcrumbs text-sm font-bold mb-4 h-4">
         <Breadcrumbs>
           {breadcrumbs.map((breadcrumb, index) => {

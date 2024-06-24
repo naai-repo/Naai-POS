@@ -592,7 +592,7 @@ const ProcessingModal = ({
                       </div>
                     </div> */}
                   </div>
-                  <div className="right-container p-2">
+                  <div className="right-container p-2 relative">
                     <div className="title capitalize text-lg text-gray-400 font-semibold flex">
                       <Checkbox defaultSelected size="sm"></Checkbox>
                       <div className="title-text">membership discount</div>
@@ -620,7 +620,7 @@ const ProcessingModal = ({
                         money={true}
                       />
                     </div>
-                    <div className="amount-paid border border-black py-7">
+                    <div className="amount-paid border w-[90%] border-black py-7 bottom-0 absolute">
                       <DisplayBillInfo
                         title="amount paid"
                         value={amountPaid}
@@ -628,9 +628,9 @@ const ProcessingModal = ({
                         text="md"
                       />
                     </div>
-                    <div className="keyboard-container relative mt-2">
-                      {/* <OnScreenKeyboardModal /> */}
-                    </div>
+                    {/* <div className="keyboard-container relative mt-2">
+                      <OnScreenKeyboardModal />
+                    </div> */}
                   </div>
                   <div className="action-buttons w-[18%] flex flex-col justify-end items-end">
                     {/* <Button

@@ -15,7 +15,7 @@ const config: Config = {
         "naai-secondary": "#1b1b27",
         "naai-pos-100": "#e9edf7",
         "naai-pos-200": "#dee2e6",
-        "naai-pos-300": "#f3f3f3",
+        "naai-pos-300": "#f1f1f1",
         "naai-pos-400": "#ced4da",
         "naai-pos-500": "#f8f9fa",
       },
@@ -27,6 +27,15 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      keyframes:{
+        "pop-right":{
+          "0%": {transform: "translateX(-100%)"},
+          "100%": {transform: "translateX(0%)"},
+        }
+      },
+      animation:{
+        "pop-right" : "pop-right 0.5s ease-in-out forwards"
+      }
     },
   },
   darkMode: "class",
