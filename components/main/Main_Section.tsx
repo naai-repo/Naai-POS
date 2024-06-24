@@ -5,9 +5,9 @@ import OnScreenKeyboard from "./components/OnScreenKeyboard";
 
 const Main_Section = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="h-[calc(100vh-1.5rem)] bg-naai-pos-300 w-[40%]">
+    <div className="h-[calc(100vh-5rem)] bg-naai-pos-300 w-[40%]">
       {children}
-      <OnScreenKeyboard />
+      {/* <OnScreenKeyboard /> */}
     </div>
   );
 };

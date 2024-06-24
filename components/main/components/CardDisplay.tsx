@@ -5,7 +5,7 @@ import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 import { HomeProps, ServiceSelectedInterface } from "@/lib/types";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/breadcrumbs";
 import axios from "axios";
-import { MoveLeft, MoveRight } from "lucide-react";
+import { MoveLeft, MoveRight, Search } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
 import SearchResults from "./SearchResults";
@@ -81,7 +81,7 @@ const CardDisplay: React.FC<HomeProps> = ({
   };
 
   return (
-    <div className="home-parent px-4 py-6 h-2/3">
+    <div className="home-parent px-4 py-6 pt-2 h-2/3">
       {/* <div className="breadcrumbs text-sm font-bold mb-4 h-4">
         <Breadcrumbs>
           {breadcrumbs.map((breadcrumb, index) => {
@@ -95,12 +95,16 @@ const CardDisplay: React.FC<HomeProps> = ({
       </div> */}
       <div className="backAndForwardButtons w-full flex items-center mb-8">
         <div className="search-bar mr-4 w-[65%] relative">
-          <input
-            type="text"
-            className="w-full rounded-md p-2"
-            onChange={handleChangeForSearchValue}
-            ref={searchBarRef}
-          />
+          <div className="search-bar-parent bg-white flex items-center px-2 rounded-md"> 
+            <Search />
+            <input
+              type="text"
+              className="w-full rounded-md p-2"
+              onChange={handleChangeForSearchValue}
+              ref={searchBarRef}
+              placeholder="Search for services..."
+            />
+          </div>
           {searchData.length > 0 && (
             <SearchResults
               searchData={searchData}

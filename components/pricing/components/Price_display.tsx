@@ -14,9 +14,9 @@ const Price_display = ({align, price=0} : {align: "left" | "right" | "center", p
   }, [align])
 
   return (
-    <div className="bg-naai-secondary h-16 w-full">
+    <div className="bg-[#212529] h-16 w-full">
       <div className={`flex ${orientation} items-center h-full px-2`}>
-        <div className="text-amber-500 text-4xl">{price.toLocaleString("en-In", currencyOptions)}</div>
+        <div className="text-[#acca70] text-4xl">{price.toLocaleString("en-In", currencyOptions)}</div>
       </div>
     </div>
   )

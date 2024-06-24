@@ -12,10 +12,10 @@ const config: Config = {
     extend: {
       colors: {
         "naai-primary": "#9e183b",
-        "naai-secondary": "#2b2f34",
+        "naai-secondary": "#1b1b27",
         "naai-pos-100": "#e9edf7",
         "naai-pos-200": "#dee2e6",
-        "naai-pos-300": "#ced4da",
+        "naai-pos-300": "#f3f3f3",
         "naai-pos-400": "#ced4da",
         "naai-pos-500": "#f8f9fa",
       },

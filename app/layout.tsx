@@ -26,7 +26,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <CookieProvider>
-          <Header />
+          <div className="sticky top-0 z-50">
+            <div className="shadow-md bg-white">
+              <Header />
+            </div>
+          </div>
           <div className="flex w-screen overflow-hidden">
             {/* <Action_Buttons /> */}
             <Main_Section>{children}</Main_Section>
