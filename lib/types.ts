@@ -116,3 +116,13 @@ export interface ServiceSelectedInterface {
   variableType?: string;
   _id?: string;
 }
+
+export interface SalonData {
+  id : string;
+  name : string;
+  img: string;
+  address: string,
+  phoneNumber: number,
+  instagram: string,
+  taxIncluded: boolean,
+}

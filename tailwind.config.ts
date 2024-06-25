@@ -31,10 +31,25 @@ const config: Config = {
         "pop-right":{
           "0%": {transform: "translateX(-100%)"},
           "100%": {transform: "translateX(0%)"},
-        }
+        },
+        "pop-left":{
+          "0%": {transform: "translateX(0%)"},
+          "100%": {transform: "translateX(-100%)"},
+        },
+        "pop-out":{
+          "0%": {opacity: "1"},
+          "100%": {opacity: "0"},
+        },
+        "pop-in":{
+          "0%": {opacity: "0"},
+          "100%": {opacity: "1"},
+        },
       },
       animation:{
-        "pop-right" : "pop-right 0.5s ease-in-out forwards"
+        "pop-right" : "pop-right 0.5s ease-in-out forwards",
+        "pop-left": "pop-left 0.5s ease-in-out forwards",
+        "pop-out": "pop-out 0.5s ease-in-out forwards",
+        "pop-in": "pop-in 0.2s ease-in-out forwards",
       }
     },
   },

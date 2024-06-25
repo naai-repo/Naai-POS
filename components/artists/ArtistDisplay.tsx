@@ -1,5 +1,6 @@
 "use client";
 import { Urls } from "@/lib/api";
+import { salonAtom } from "@/lib/atoms/salonAtom";
 import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import { ArtistDisplayProps, SelectedServicesInterface } from "@/lib/types";
@@ -23,11 +24,12 @@ const ArtistDisplay: React.FC<ExtendedArtistDisplay> = ({
 }) => {
   const setSelectedServices = useSetRecoilState(selectedServiceAtom);
   const salonId = useRecoilValue(salonIdAtom);
+  const salonData = useRecoilValue(salonAtom);
+
   const handleClick = async () => {
-    let salonData = await axios.get(`${Urls.GetSalonData}/${salonId}`);
-    let taxIncluded = salonData.data.data.data.taxIncluded;
+    let taxIncluded = salonData.taxIncluded;
     let tax = 0;
-    console.log("TAX: ", salonData.data.data.data.taxIncluded);
+    console.log("TAX: ", salonData.taxIncluded);
     if(taxIncluded){
       let priceExcludingTax = price / 1.18;
       tax = Math.round((price - priceExcludingTax)*100)/100;

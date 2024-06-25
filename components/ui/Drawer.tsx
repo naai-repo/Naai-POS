@@ -9,6 +9,7 @@ import {
   SheetDescription,
   SheetFooter,
   SheetHeader,
+  SheetOverlay,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -32,6 +33,8 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+import { useRecoilValue } from "recoil";
+import { salonAtom } from "@/lib/atoms/salonAtom";
 
 export const Drawer = forwardRef<{ openDrawer: () => void }, any>(({}, ref) => {
   const [open, setOpen] = useState(false);
@@ -51,9 +54,9 @@ export const Drawer = forwardRef<{ openDrawer: () => void }, any>(({}, ref) => {
   });
 
   return (
-    <Sheet key={"left"} open={open}>
-      <DrawerContent closeDrawer={closeDrawer}></DrawerContent>
-    </Sheet>
+      <Sheet key={"left"} open={open}>
+        <DrawerContent closeDrawer={closeDrawer}></DrawerContent>
+      </Sheet>
   );
 });
 
@@ -61,7 +64,7 @@ Drawer.displayName = "Drawer";
 
 const DrawerContent = memo(({ closeDrawer }: { closeDrawer: () => void }) => {
   return (
-    <SheetContent side={"left"} className="p-0 animate-pop-right">
+    <SheetContent side={"left"} className="p-0 data-[state=open]:animate-pop-right data-[state=closed]:animate-pop-left">
       <SheetHeader className="bg-[#F4F6FB] p-0 w-full">
         <SalonProfileDrawerHeader
           callback={closeDrawer}
@@ -125,20 +128,14 @@ DrawerContent.displayName = "DrawerContent";
 
 const SalonProfileDrawerHeader = memo(
   ({ callback }: { callback: () => void }) => {
-    //    const componentData = {
-    //       imageUrl : (salonData.salonData?.images != null && salonData.salonData?.images?.length) ? salonData.salonData?.images[0] : `https://media.allure.com/photos/5890d754a08420c838db65e1/master/pass/WesWall1Edit.jpg?mbid=social_retweet`,
-    //       salonName : salonData?.salonData?.name,
-    //       adddress : salonData?.salonData?.address,
-    //       phoneNumber : salonData?.salonData?.phoneNumber,
-    //       instagram : salonData?.salonData?.links?.instagram
-    //    }
-
+    
+    const salonData = useRecoilValue(salonAtom);
     const componentData = {
-      imageUrl: `https://media.allure.com/photos/5890d754a08420c838db65e1/master/pass/WesWall1Edit.jpg?mbid=social_retweet`,
-      salonName: "test",
-      adddress: "asbcasdasd",
-      phoneNumber: 1231231231,
-      instagram: "asdasd",
+      imageUrl: (salonData.img ? salonData.img : `https://media.allure.com/photos/5890d754a08420c838db65e1/master/pass/WesWall1Edit.jpg?mbid=social_retweet`),
+      salonName: salonData.name,
+      address: salonData.address,
+      phoneNumber: salonData.phoneNumber,
+      instagram: salonData.instagram,
     };
 
     return (
@@ -172,7 +169,7 @@ const SalonProfileDrawerHeader = memo(
                 </h1>
               </div>
               <div className="text-start text-xs w-full overflow-hidden text-ellipsis overflow-cut-upto-2-line">
-                {componentData.adddress}
+                {componentData.address}
               </div>
             </div>
           </div>
