@@ -35,6 +35,7 @@ import React, {
 } from "react";
 import { useRecoilValue } from "recoil";
 import { salonAtom } from "@/lib/atoms/salonAtom";
+import { useRouter } from "next/navigation";
 
 export const Drawer = forwardRef<{ openDrawer: () => void }, any>(({}, ref) => {
   const [open, setOpen] = useState(false);
@@ -63,6 +64,7 @@ export const Drawer = forwardRef<{ openDrawer: () => void }, any>(({}, ref) => {
 Drawer.displayName = "Drawer";
 
 const DrawerContent = memo(({ closeDrawer }: { closeDrawer: () => void }) => {
+  const router = useRouter();
   return (
     <SheetContent side={"left"} className="p-0 data-[state=open]:animate-pop-right data-[state=closed]:animate-pop-left">
       <SheetHeader className="bg-[#F4F6FB] p-0 w-full">
@@ -74,6 +76,7 @@ const DrawerContent = memo(({ closeDrawer }: { closeDrawer: () => void }) => {
         <Button
           variant={"outline"}
           className="flex flex-row justify-between border items-center py-6 rounded w-full"
+          onClick={() => router.push("https://partner.naai.in/dashboard")}
         >
           <div className="flex flex-row items-center font-xs font-semibold">
             <LayoutDashboard className="mr-3" />
@@ -98,6 +101,7 @@ const DrawerContent = memo(({ closeDrawer }: { closeDrawer: () => void }) => {
         <Button
           variant={"outline"}
           className="flex flex-row justify-between border items-center py-6 rounded w-full"
+          onClick={() => router.push("https://partner.naai.in/profile")}
         >
           <div className="flex flex-row items-center font-xs font-semibold">
             <User className="mr-3" />
@@ -110,6 +114,7 @@ const DrawerContent = memo(({ closeDrawer }: { closeDrawer: () => void }) => {
         <Button
           variant={"outline"}
           className="flex flex-row justify-between border items-center py-6 rounded w-full"
+          onClick={() => router.push("https://partner.naai.in/reviews")}
         >
           <div className="flex flex-row items-center font-xs font-semibold">
             <MessageCircleMore className="mr-3" />
