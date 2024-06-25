@@ -88,7 +88,7 @@ const DrawerContent = memo(({ closeDrawer }: { closeDrawer: () => void }) => {
         </Button>
         <Button
           variant={"outline"}
-          className="flex flex-row justify-between border items-center py-6 rounded w-full"
+          className="flex flex-row justify-between border items-center py-6 rounded w-full bg-[#0F172A] text-[#fff]"
         >
           <div className="flex flex-row items-center font-xs font-semibold">
             <BarChart3 className="mr-3" />
