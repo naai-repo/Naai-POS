@@ -2,7 +2,7 @@
 import { activeInputTagAtom } from "@/lib/atoms/activeInputTag";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from "recoil";
-import { Delete, HandCoins, PackageOpen, RefreshCcw, X } from "lucide-react";
+import { Delete, HandCoins, PackageOpen, RefreshCcw, SquarePen, X } from "lucide-react";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import { pricingAtom } from "@/lib/atoms/pricing";
 import { selectedTableIndexAtom } from "@/lib/atoms/selectedTableIndex";
@@ -89,6 +89,7 @@ const OnScreenKeyboard = () => {
         return newSelectedServices;
       });
       resetPricing();
+      
       resetSelectedTableIndex();
       return;
     }
@@ -137,32 +138,40 @@ const OnScreenKeyboard = () => {
 
   return (
     <div className="flex w-full justify-between relative bottom-0">
-      <div className="on-screen-keyboard-parent w-full">
-        <div className="on-screen-keyboard-container flex justify-between relative ml-4">
+      <div className="on-screen-keyboard-parent w-full pr-4">
+        <div className="on-screen-keyboard-container text-white flex justify-between relative ml-4">
           <HoldServicesModal isOpen={openHoldModal} setOpenHoldModal={setOpenHoldModal}/>
-          <Button className="h-[4rem] w-[7.5rem] rounded-md flex justify-center items-center bg-yellow-400 drop-shadow-md cursor-pointer mr-4" onClick={() => setOpenHoldModal(true)}>
+          <Button className="h-[4rem] w-[7.5rem] rounded-md flex text-white justify-center items-center bg-[#db5a11] drop-shadow-md cursor-pointer" onClick={() => setOpenHoldModal(true)}>
             <RefreshCcw /> Load{" "}
           </Button>
-          <Button className="h-[4rem] w-[7.5rem] rounded-md flex justify-center items-center bg-pink-400 drop-shadow-md cursor-pointer mr-4" onClick={handleHoldFunction}>
+          <Button className="h-[4rem] w-[7.5rem] rounded-md flex text-white justify-center items-center bg-[#db11a2] drop-shadow-md cursor-pointer" onClick={handleHoldFunction}>
             <PackageOpen /> Hold{" "}
           </Button>
           {keysArr.map((key) => (
             <div
               key={key}
-              className={`flex justify-center items-center w-[7.5rem] bg-naai-pos-500 drop-shadow-md cursor-pointer rounded-md h-[4rem] mr-4" + ${(key === "close" ? "bg-red-400" : "bg-blue-400")}`}
+              className={`flex justify-center capitalize font-normal text-small items-center w-[7.5rem] drop-shadow-md cursor-pointer rounded-md h-[4rem]" + ${(key === "close" ? "bg-[#db1111]" : key === "update" ? "bg-[#1192db]" : "")}`}
               onClick={handleNumClick}
               data-key={key}
             >
               {key === "backspace" ? (
                 <Delete size={24} className="pointer-events-none" />
               ) : key === "close" ? (
-                <X size={24} className="pointer-events-none" />
-              ) : (
+                <>
+                  <X size={24} className="pointer-events-none" />
+                  Clear All
+                </>
+              ) : key === "update" ? (
+                <>
+                <SquarePen /> &nbsp;
+                update
+                </>
+              ) :(
                 key
               )}
             </div>
           ))}
-          <Button className="h-[4rem] w-[7.5rem] rounded-md flex justify-center items-center bg-green-400 drop-shadow-md cursor-pointer mr-4" onClick={() => setOpenProcessModal(true)}>
+          <Button className="h-[4rem] w-[7.5rem] text-white rounded-md flex justify-center items-center bg-[#189c09] drop-shadow-md cursor-pointer" onClick={() => setOpenProcessModal(true)}>
             <HandCoins /> Process{" "}
             <ProcessingModal isOpen={openProcessModal} setOpenProcessModal={setOpenProcessModal} />
           </Button>

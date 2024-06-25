@@ -23,7 +23,9 @@ const columns = [
 ];
 
 const ItemsTable = () => {
+  const selectedTableIndex = useRecoilValue(selectedTableIndexAtom);
   const setSelectedTableIndex = useSetRecoilState(selectedTableIndexAtom);
+  const resetSelectedTableIndex = useResetRecoilState(selectedTableIndexAtom);
   const resetSetSelectedTableIndex = useResetRecoilState(selectedTableIndexAtom);
   const setPricing = useSetRecoilState(pricingAtom);
   const resetPricing = useResetRecoilState(pricingAtom);
@@ -41,6 +43,10 @@ const ItemsTable = () => {
   const handleTrashIcon = (id: number) => {
     resetPricing();
     resetSetSelectedTableIndex();
+    if(selectedServices.length === 1) {
+      console.log("RESETING TABLE INDEX")
+      resetSelectedTableIndex();
+    }
     setSelectedServices((prev) => {
       const newSelectedServices = [...prev];
 
@@ -57,8 +63,6 @@ const ItemsTable = () => {
       <Table
         removeWrapper
         isCompact
-        color="warning"
-        selectionMode="single"
         className="capitalize"
         classNames={{
           td: "truncate",
@@ -80,7 +84,7 @@ const ItemsTable = () => {
               <TableRow
                 key={id}
                 onClick={() => handleRowClick(id)}
-                className="bg-white"
+                className={`cursor-pointer transition-colors ${selectedTableIndex === id ? "bg-yellow-200" : "bg-white"}`}
               >
                 <TableCell className="rounded-s-md">
                   <div className="flex items-center">

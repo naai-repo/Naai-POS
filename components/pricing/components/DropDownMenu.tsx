@@ -58,7 +58,7 @@ const DropDownMenu = ({
   };
 
   return (
-    <div className="w-full h-3/4 border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100 bg-white absolute overflow-y-scroll scrollbar-hide z-40">
+    <div className="w-full h-4/5 border-small px-1 py-2 rounded-small border-default-200 dark:border-default-100 bg-white absolute overflow-y-scroll scrollbar-hide z-40">
       {showInputModal ? (
         <EnterUserDetails
           setShowInputModal={setShowInputModal}

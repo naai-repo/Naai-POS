@@ -82,7 +82,7 @@ const Pricing = () => {
   useEffect(() => {
     if (selectedServices.length > 0) {
       let price = selectedServices.reduce((acc, curr) => {
-        return acc + curr.price;
+        return acc + (curr.price * curr.qty);
       }, 0);
       setServicePrice(price * 1.18);
     } else {

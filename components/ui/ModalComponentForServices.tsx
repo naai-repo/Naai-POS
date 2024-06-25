@@ -63,7 +63,6 @@ const ModalComponentForServices = ({
   const [artists, setArtists] = useState([]);
   const SALONID = useRecoilValue(salonIdAtom);
   useEffect(() => {
-    console.log("Service Details: ", serviceDetails);
     const getArtists = async () => {
       const data = await getArtistsForService(serviceDetails, SALONID);
       setArtists(data);

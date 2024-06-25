@@ -81,7 +81,7 @@ const CardDisplay: React.FC<HomeProps> = ({
   };
 
   return (
-    <div className="home-parent px-4 py-6 pt-2 h-2/3">
+    <div className="home-parent px-4 py-6 pt-2 h-full">
       {/* <div className="breadcrumbs text-sm font-bold mb-4 h-4">
         <Breadcrumbs>
           {breadcrumbs.map((breadcrumb, index) => {
@@ -129,18 +129,18 @@ const CardDisplay: React.FC<HomeProps> = ({
             setServiceSelected={setServiceSelected}
           />
         </div>
-        <div className="buttons w-[35%] flex items-center">
+        <div className="buttons w-[35%] flex items-center justify-evenly">
           <div
-            className="back bg-white px-8 py-4 rounded-lg shadow-lg mr-4"
+            className="back bg-white p-3 rounded-full shadow-lg"
             onClick={moveBack}
           >
-            <MoveLeft />
+            <MoveLeft size={20}/>
           </div>
           <div
-            className="forward bg-white px-8 py-4 rounded-lg shadow-lg"
+            className="forward bg-white p-3 rounded-full shadow-lg"
             onClick={moveForward}
           >
-            <MoveRight />
+            <MoveRight size={20}/>
           </div>
         </div>
       </div>
