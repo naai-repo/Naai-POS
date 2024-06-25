@@ -8,7 +8,7 @@ import { Urls } from "@/lib/api";
 async function getCookies() {
   return new Promise((resolve, reject) => {
     const cookieStore = cookies();
-    const cookie = cookieStore.get("userId");
+    const cookie = cookieStore.get("salonId");
     resolve(cookie?.value as string);
   });
 }
