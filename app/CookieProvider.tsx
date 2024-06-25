@@ -13,26 +13,26 @@ async function getCookies() {
   });
 }
 
-async function getSalonData(salonId: string) {
-  let salonData = await axios.get(Urls.GetSalonData + `/${salonId}`);
-  let requiredSalonData = {
-    id: salonData.data.data.data._id,
-    name: salonData.data.data.data.name,
-    img: salonData.data.data.data.images[0].url,
-    address: salonData.data.data.data.address,
-    phoneNumber: salonData.data.data.data.phoneNumber,
-    instagram: salonData.data.data.data.links.instagram,
-    taxIncluded: salonData.data.data.data.taxIncluded,
-  };
-  return requiredSalonData;
-}
+// async function getSalonData(salonId: string) {
+//   let salonData = await axios.get(Urls.GetSalonData + `/${salonId}`);
+//   let requiredSalonData = {
+//     id: salonData.data.data.data._id,
+//     name: salonData.data.data.data.name,
+//     img: salonData.data.data.data.images[0].url,
+//     address: salonData.data.data.data.address,
+//     phoneNumber: salonData.data.data.data.phoneNumber,
+//     instagram: salonData.data.data.data.links.instagram,
+//     taxIncluded: salonData.data.data.data.taxIncluded,
+//   };
+//   return requiredSalonData;
+// }
 
 const CookieProvider = async ({ children }: { children: React.ReactNode }) => {
   const salonId = await getCookies();
-  const salonData = await getSalonData(salonId as string);
+  // const salonData = await getSalonData(salonId as string);
   return (
     <RecoilContextProvider>
-      <ClientProvider salonId={salonId as string} salonData={salonData}>
+      <ClientProvider salonId={salonId as string}>
         {children}
       </ClientProvider>
     </RecoilContextProvider>
