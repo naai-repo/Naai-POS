@@ -20,7 +20,7 @@ async function getServicesFromCategories(serviceName: string , gender: genderTyp
     sex = Gender.UNISEX;
   }
   const response = await axios.get(
-    `https://m.naai.in/pos/service/${decodeURIComponent(
+    `https://dev.naai.in/pos/service/${decodeURIComponent(
       serviceName
     )}?salonId=${salonId}&sex=${sex}`
   );

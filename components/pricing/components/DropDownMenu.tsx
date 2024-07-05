@@ -53,7 +53,11 @@ const DropDownMenu = ({
   }, [customer, setShowDropDown]);
 
   const handleClick = (customer: CustomerInfoInterface) => {
-    setCustomer(customer);
+    let dues = customer.dues;
+    if(customer.dues.length > 0){
+      dues = dues.filter(ele => ele.salonId.toString() === SALONID.toString());
+    }
+    setCustomer({ ...customer, dues });
     setShowDropDown(false);
   };
 

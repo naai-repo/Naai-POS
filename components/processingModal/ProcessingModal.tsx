@@ -42,17 +42,18 @@ import useResetAllState from "@/lib/hooks/useResetAllState";
 import { updatedSelectedServicesAtom } from "@/lib/atoms/updatedSelectedServices";
 import { UpdatedSelectedServicesEnum } from "@/lib/enums";
 import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
+import ClearDuesModal from "./components/ClearDuesModal";
 
 const DisplayBillInfo = ({
   title,
   value,
   money = false,
-  text = "xs"
+  text = "xs",
 }: {
   title: string;
   value: number | string;
   money?: boolean;
-  text?:String
+  text?: String;
 }) => {
   return (
     <div className="display-bill-info-component flex justify-between items-center px-4">
@@ -70,7 +71,7 @@ const DisplayInfoWithInbox = ({
   options = [],
   setState,
   id = undefined,
-  inputRef = undefined
+  inputRef = undefined,
 }: {
   title: string;
   dropDown?: boolean;
@@ -121,6 +122,8 @@ const ProcessingModal = ({
   setOpenProcessModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [activeKey, setActiveKey] = useState<string | number | bigint>("");
+  const [openClearDuesModal, setOpenClearDuesModal] = useState<boolean>(false);
+  const [amountToBePaid, setAmountToBePaid] = useState(0);
   const [payments, setPayments] = useState<PaymentsInterface[]>([]);
   const [cashAmount, setCashAmount] = useState<number | string>(0);
   const [percentDisc, setPercentDisc] = useState<number | string>(0);
@@ -143,8 +146,12 @@ const ProcessingModal = ({
   const resetSelectedCoupon = useResetRecoilState(couponAtom);
   const { resetAllState } = useResetAllState();
   const couponRef = React.useRef<HTMLInputElement>(null);
-  const [initialSelectedServices, setInitialSelectedServices] = useState<SelectedServicesInterface[]>([]);
-  const [updatedSelectedServices, setUpdatedSelectedServices] = useRecoilState(updatedSelectedServicesAtom);
+  const [initialSelectedServices, setInitialSelectedServices] = useState<
+    SelectedServicesInterface[]
+  >([]);
+  const [updatedSelectedServices, setUpdatedSelectedServices] = useRecoilState(
+    updatedSelectedServicesAtom
+  );
   const percentDiscRef = useRef<HTMLInputElement>(null);
   const cashDiscRef = useRef<HTMLInputElement>(null);
   const SALONID = useRecoilValue(salonIdAtom);
@@ -165,28 +172,31 @@ const ProcessingModal = ({
   }, [payments]);
 
   useEffect(() => {
-    if(!percentDiscRef.current || !cashDiscRef.current) return;
+    if (!percentDiscRef.current || !cashDiscRef.current) return;
     percentDiscRef.current.value = percentDisc.toString();
     cashDiscRef.current.value = cashDisc.toString();
   }, [percentDiscRef, cashDiscRef, percentDisc, cashDisc, isOpen]);
 
   // itemprice -> excluding gst
-  // first calculate totalItemPrice 
+  // first calculate totalItemPrice
   // price after discount = totalItemPrice - discount
   // tax = (price after discount) * 0.18
   // final price = price after discount + tax
   // propotionally calculate price for each service
 
   useEffect(() => {
-    function divideCashDiscount(){
+    function divideCashDiscount() {
       let totalItemPrice = 0;
       initialSelectedServices.map((service) => {
         totalItemPrice += service.price * service.qty; //total item price excluding gst
       });
       let totalItemPriceWithGst = totalItemPrice * 1.18;
-      let totalDiscount = Number(cashDisc) + Number(percentCashDisc) + selectedCoupon.couponDiscount;
+      let totalDiscount =
+        Number(cashDisc) +
+        Number(percentCashDisc) +
+        selectedCoupon.couponDiscount;
       let priceAfterDiscount = totalItemPriceWithGst - totalDiscount;
-      setFinalAmount(Math.round((priceAfterDiscount)*100)/100);
+      setFinalAmount(Math.round(priceAfterDiscount * 100) / 100);
       priceAfterDiscount = priceAfterDiscount / 1.18;
       let totalTax = priceAfterDiscount * 0.18;
       setTotalGst(totalTax);
@@ -194,7 +204,8 @@ const ProcessingModal = ({
       setSelectedServices((prev) => {
         const newSelectedServices = prev.map((_, index) => {
           let item = initialSelectedServices[index];
-          let discount = item.price - ((item.price / totalItemPrice) * priceAfterDiscount);
+          let discount =
+            item.price - (item.price / totalItemPrice) * priceAfterDiscount;
           let newService = {
             ...item,
             price: item.price - discount,
@@ -207,7 +218,12 @@ const ProcessingModal = ({
       });
     }
     divideCashDiscount();
-  }, [cashDisc, percentCashDisc, selectedCoupon.couponDiscount, initialSelectedServices])
+  }, [
+    cashDisc,
+    percentCashDisc,
+    selectedCoupon.couponDiscount,
+    initialSelectedServices,
+  ]);
 
   // useEffect(() => {
   //   function divideCashDiscount() {
@@ -216,7 +232,7 @@ const ProcessingModal = ({
   //       Number(percentCashDisc) +
   //       selectedCoupon.couponDiscount;
   //     let totalItemPrice = 0;
-      
+
   //     initialSelectedServices.map((service) => {
   //       totalItemPrice += service.price * service.qty;
   //     });
@@ -247,17 +263,17 @@ const ProcessingModal = ({
   // }, [salonDiscount]);
 
   useEffect(() => {
-    if(updatedSelectedServices !== UpdatedSelectedServicesEnum.NotUpdated){
-      console.log("INITITAL: ", selectedServices)
+    if (updatedSelectedServices !== UpdatedSelectedServicesEnum.NotUpdated) {
+      console.log("INITITAL: ", selectedServices);
       setInitialSelectedServices(selectedServices);
     }
-  }, [selectedServices.length , updatedSelectedServices]);
+  }, [selectedServices.length, updatedSelectedServices]);
 
   useEffect(() => {
-    if(updatedSelectedServices === UpdatedSelectedServicesEnum.Updated){
+    if (updatedSelectedServices === UpdatedSelectedServicesEnum.Updated) {
       setUpdatedSelectedServices(UpdatedSelectedServicesEnum.NotUpdated);
     }
-  }, [updatedSelectedServices])
+  }, [updatedSelectedServices]);
 
   useEffect(() => {
     let totalBasePrice = 0;
@@ -273,10 +289,10 @@ const ProcessingModal = ({
     setOriginalBillValue(totalBasePrice);
     setItemTotal(totalItemPrice);
     // setTotalGst(totalGST);
-    setFinalAmount(Math.round((totalItemPrice + totalGST)*100)/100);
+    setFinalAmount(Math.round((totalItemPrice + totalGST) * 100) / 100);
     setTotalQty(totalQuantity);
     setUniqueItems(selectedServices.length);
-    if(selectedServices.length === 0){
+    if (selectedServices.length === 0) {
       setFinalAmount(0);
       setCashDisc(0);
       setPercentCashDisc(0);
@@ -294,7 +310,7 @@ const ProcessingModal = ({
       selectedCoupon.couponDiscount -
       percentCashDisc -
       amountPaid;
-    setFinalAmount(Math.round((newAmount - Number(cashDisc))*100)/100);
+    setFinalAmount(Math.round((newAmount - Number(cashDisc)) * 100) / 100);
   }, [cashDisc]);
 
   useEffect(() => {
@@ -303,7 +319,7 @@ const ProcessingModal = ({
         (prev) => (
           console.log(prev),
           setPercentCashDisc((Number(percentDisc) * prev) / 100),
-          Math.round((prev - (Number(percentDisc) * prev) / 100)*100)/100
+          Math.round((prev - (Number(percentDisc) * prev) / 100) * 100) / 100
         )
       );
     }, 500);
@@ -320,7 +336,10 @@ const ProcessingModal = ({
         remarks: "",
       },
     ]);
-    setFinalAmount((prev) => {console.log(prev-Number(cashAmount)); return Math.round((prev - Number(cashAmount))*100)/100});
+    setFinalAmount((prev) => {
+      console.log(prev - Number(cashAmount));
+      return Math.round((prev - Number(cashAmount)) * 100) / 100;
+    });
     let cashInput = document.getElementById("cash-amt") as HTMLInputElement;
     cashInput.value = "";
   };
@@ -336,7 +355,10 @@ const ProcessingModal = ({
         if (payments[index].id.toString() !== activeKey) {
           newPayments.push(payments[index]);
         } else {
-          setFinalAmount((prev) => Math.round((prev + Number(payments[index].amount))*100)/100);
+          setFinalAmount(
+            (prev) =>
+              Math.round((prev + Number(payments[index].amount)) * 100) / 100
+          );
         }
       }
       for (let index in newPayments) {
@@ -353,7 +375,7 @@ const ProcessingModal = ({
       totalPrice += Number(payment.amount);
     });
     setPayments([]);
-    setFinalAmount((prev) => Math.round((prev + totalPrice)*100)/100);
+    setFinalAmount((prev) => Math.round((prev + totalPrice) * 100) / 100);
   };
 
   const handleProcessButton = async () => {
@@ -373,11 +395,22 @@ const ProcessingModal = ({
         percentDisc: percentDisc,
         gst: totalGst,
         percentCashDisc: percentCashDisc,
+        amountDue: finalAmount,
+        duesCleared: amountToBePaid,
       },
       payments: payments,
       coupon: selectedCoupon,
     });
     console.log("Processing Payments");
+    if(data){
+      console.log("Payment Procesed Successfully");
+      let userDuesCleared = await axios.post(Urls.ClearDues, {
+        userId: customer.id,
+        salonId: SALONID,
+        amountPaid: amountToBePaid,
+      });
+      console.log(userDuesCleared.data);
+    }
     resetAllState(); // Reset all states
     setFinalAmount(0);
     setCashDisc(0);
@@ -391,7 +424,7 @@ const ProcessingModal = ({
 
   const handleAddingCoupons = async () => {
     try {
-      if(selectedCoupon.code){
+      if (selectedCoupon.code) {
         alert("Coupon Already Applied");
         return;
       }
@@ -424,13 +457,18 @@ const ProcessingModal = ({
       }
       let discountValue = finalAmount * (newCoupon.discount / 100);
       if (discountValue > newCoupon.max_value) {
-        setFinalAmount(Math.round((finalAmount - newCoupon.max_value - amountPaid)*100)/100);
+        setFinalAmount(
+          Math.round((finalAmount - newCoupon.max_value - amountPaid) * 100) /
+            100
+        );
         newCoupon = {
           ...newCoupon,
           couponDiscount: newCoupon.max_value,
         };
       } else {
-        setFinalAmount(Math.round((finalAmount - discountValue - amountPaid)*100)/100);
+        setFinalAmount(
+          Math.round((finalAmount - discountValue - amountPaid) * 100) / 100
+        );
         newCoupon = {
           ...newCoupon,
           couponDiscount: discountValue,
@@ -445,13 +483,16 @@ const ProcessingModal = ({
   };
 
   const handleCancelingCoupons = () => {
-    setFinalAmount(Math.round((finalAmount + selectedCoupon.couponDiscount)*100)/100);
+    setFinalAmount(
+      Math.round((finalAmount + selectedCoupon.couponDiscount) * 100) / 100
+    );
     resetSelectedCoupon();
     setCoupon("");
   };
 
   return (
     <>
+      <ClearDuesModal isOpen={openClearDuesModal} setIsOpen={setOpenClearDuesModal} amountToBePaid={amountToBePaid} setAmountToBePaid={setAmountToBePaid}/>
       <RemarksModal
         isOpen={openRemarksModal}
         setOpenRemarksModal={setOpenRemarksModal}
@@ -633,12 +674,13 @@ const ProcessingModal = ({
                     </div> */}
                   </div>
                   <div className="action-buttons w-[18%] flex flex-col justify-end items-end">
-                    {/* <Button
+                    <Button
                       size="lg"
                       className="w-full bg-naai-primary text-white rounded-md"
+                      onClick={() => setOpenClearDuesModal(true)}
                     >
-                      Details
-                    </Button> */}
+                      Clear Dues
+                    </Button>
                     {activeKey !== "" ? (
                       <Button
                         size="lg"
@@ -670,24 +712,13 @@ const ProcessingModal = ({
                     >
                       Remarks
                     </Button>
-                    {finalAmount === 0 ? (
-                      <Button
-                        size="lg"
-                        className="w-full bg-naai-primary text-white rounded-md mt-2"
-                        onClick={handleProcessButton}
-                      >
-                        Process
-                      </Button>
-                    ) : (
-                      <Button
-                        size="lg"
-                        className="w-full bg-naai-primary text-white rounded-md mt-2"
-                        isDisabled
-                        onClick={handleProcessButton}
-                      >
-                        Process
-                      </Button>
-                    )}
+                    <Button
+                      size="lg"
+                      className="w-full bg-naai-primary text-white rounded-md mt-2"
+                      onClick={handleProcessButton}
+                    >
+                      Process
+                    </Button>
                   </div>
                 </div>
                 <div className="payments-table">

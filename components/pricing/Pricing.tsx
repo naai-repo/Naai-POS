@@ -1,7 +1,7 @@
 "use client";
 import React, { use, useEffect, useRef, useState } from "react";
 import Price_display from "./components/Price_display";
-import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
+import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import ItemsTable from "../tables/ItemsTable";
 import {
   useRecoilState,
@@ -16,6 +16,7 @@ import axios from "axios";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import { User } from "lucide-react";
 import OnScreenKeyboard from "../main/components/OnScreenKeyboard";
+import PendingDuesModal from "./components/PendingDuesModal";
 
 const PricingInputArray = ["Qty", "Price", "Disc"];
 
@@ -78,11 +79,14 @@ const Pricing = () => {
   const selectedServices = useRecoilValue(selectedServiceAtom);
   const [servicePrice, setServicePrice] = useState<number>(0);
   const [showDropDown, setShowDropDown] = useState(false);
+  const [openPopover, setOpenPopover] = useState(false);
+  const [openPendingModal, setOpenPendingModal] = useState(false);
+  const triggerRef = useRef(null);
 
   useEffect(() => {
     if (selectedServices.length > 0) {
       let price = selectedServices.reduce((acc, curr) => {
-        return acc + (curr.price * curr.qty);
+        return acc + curr.price * curr.qty;
       }, 0);
       setServicePrice(price * 1.18);
     } else {
@@ -94,11 +98,16 @@ const Pricing = () => {
     if (searchCustomer.current) {
       if (customer.phoneNumber !== "" && customer.name !== "") {
         searchCustomer.current.value = `${customer.phoneNumber} - ${customer.name}`;
+        if(customer.dues.length){
+          setOpenPopover(true);
+        }
       } else {
         searchCustomer.current.value = customer.phoneNumber || "";
+        setOpenPopover(false);
       }
       if (searchCustomer.current.value === "") {
         setShowDropDown(false);
+        setOpenPopover(false);
       }
     }
   }, [customer]);
@@ -108,11 +117,13 @@ const Pricing = () => {
     }
 
     if (e.nativeEvent.inputType === "deleteContentBackward") {
+      setOpenPopover(false);
       setCustomer({
         name: "",
         gender: "",
         id: "",
         phoneNumber: e.target.value,
+        dues: [],
       });
       return;
     }
@@ -131,23 +142,31 @@ const Pricing = () => {
   };
   return (
     <div className="h-[calc(100vh-5rem)] bg-white w-[60%] relative">
+      <PendingDuesModal isOpen={openPendingModal} setIsOpen={setOpenPendingModal} setOpenPopover={setOpenPopover}/>
       <ItemsTable />
       <div className="parent-div w-full absolute bottom-0">
         <div className="w-full relative bottom-0 p-2 pb-7">
           <Price_display align="right" price={servicePrice} />
-          <div className="search-customer-parent flex mt-2">
-            <div className="profile-pic border-2 rounded-s-md bg-white border-black p-1 border-r-1">
-              <User />
+          <Popover placement="top" showArrow={true} isOpen={openPopover} triggerRef={triggerRef} onOpenChange={() => setOpenPopover(false)}>
+            <div className="search-customer-parent flex mt-2" ref={triggerRef}>
+              <div className="profile-pic border-2 rounded-s-md bg-white border-black p-1 border-r-1">
+                <User />
+              </div>
+              <input
+                className="bg-white min-h-3 h-6 rounded-e-md p-2 py-4 text-sm w-full border-2 border-l-1 border-black"
+                placeholder="Search Customer (Phone No.)"
+                onChange={handlePhoneNumberChange}
+                id="search-customer"
+                ref={searchCustomer}
+                autoComplete="off"
+              />
             </div>
-            <input
-              className="bg-white min-h-3 h-6 rounded-e-md p-2 py-4 text-sm w-full border-2 border-l-1 border-black"
-              placeholder="Search Customer (Phone No.)"
-              onChange={handlePhoneNumberChange}
-              id="search-customer"
-              ref={searchCustomer}
-              autoComplete="off"
-            />
-          </div>
+            <PopoverContent onClick={() => {setOpenPendingModal(true), setOpenPopover(false)}} className="cursor-pointer">
+              <div className="px-1 py-2">
+                <div className="text-tiny font-bold">Pending Dues: {customer.dues.length}</div>
+              </div>
+            </PopoverContent>
+          </Popover>
           {showDropDown && <DropDownMenu setShowDropDown={setShowDropDown} />}
           {/* <div className="grid p-3 grid-rows-2 grid-cols-2">
             <CustomerDetail detail="Pending" value="--" />
