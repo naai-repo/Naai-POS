@@ -20,7 +20,7 @@ async function getServiceCategories(gender: genderType, salonId: string) {
     sex = Gender.UNISEX;
   }
   const response = await axios.get(
-    `https://m.naai.in/partner/service/category/all?salonId=${salonId}&sex=${sex}`
+    `https://dev.naai.in/partner/service/category/all?salonId=${salonId}&sex=${sex}`
   );
   if (response.status !== 200) {
     throw new Error("Not Found!");

@@ -19,7 +19,7 @@ const ClientProvider = ({salonId, children }: { salonId: string, children: React
       let requiredSalonData = {
         id: salonData.data.data.data._id,
         name: salonData.data.data.data.name,
-        img: salonData.data.data.data.images[0].url,
+        img: salonData.data.data.data.images[0]?.url,
         address: salonData.data.data.data.address,
         phoneNumber: salonData.data.data.data.phoneNumber,
         instagram: salonData.data.data.data.links.instagram,

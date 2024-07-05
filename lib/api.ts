@@ -13,5 +13,6 @@ export enum Urls {
   FetchCoupon = `${baseUrl}/coupons/fetch`,
   AddWalkinUser = `${baseUrl}/partner/walkin/add/user`,
   SearchingServices = `${baseUrl}/pos/search/services`,
-  GetArtistInfo = `${baseUrl}/partner/artist/single`
+  GetArtistInfo = `${baseUrl}/partner/artist/single`,
+  ClearDues = `${baseUrl}/partner/walkin/clear/dues`
 }

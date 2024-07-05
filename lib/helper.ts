@@ -28,6 +28,10 @@ export const currencyOptions = {
   currency: "INR",
 };
 
+export const dateOptions = {
+  timeZone: "Asia/Kolkata"
+}
+
 export const getVariablesData = async (serviceId: string) => {
   const response = await axios.get(
     Urls.GetSingleService + serviceId

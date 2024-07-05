@@ -79,6 +79,14 @@ export interface CustomerInfoInterface {
   phoneNumber: string;
   id: string;
   gender: string;
+  dues: DuesInterface[];
+}
+
+export interface DuesInterface {
+  bookingId: string;
+  salonId: string;
+  amount: number;
+  bookingDate: Date;
 }
 
 export interface HoldDataInterface {
