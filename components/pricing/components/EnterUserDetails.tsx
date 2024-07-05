@@ -30,6 +30,7 @@ const EnterUserDetails = ({
       gender: user.gender,
       name: user.name,
       phoneNumber: user.phoneNumber,
+      dues: [],
     });
     setShowInputModal(false);
     setShowDropDown(false);
