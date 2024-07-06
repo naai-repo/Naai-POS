@@ -95,7 +95,7 @@ const CardDisplay: React.FC<HomeProps> = ({
       </div> */}
       <div className="backAndForwardButtons w-full flex items-center mb-8">
         <div className="search-bar mr-4 w-[65%] relative">
-          <div className="search-bar-parent bg-white flex items-center px-2 rounded-md"> 
+          <div className="search-bar-parent bg-white flex items-center px-2 shadow-md rounded-xl border border-[#e4e8eb]"> 
             <Search />
             <input
               type="text"

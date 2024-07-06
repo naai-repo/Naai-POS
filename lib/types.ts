@@ -79,6 +79,9 @@ export interface CustomerInfoInterface {
   phoneNumber: string;
   id: string;
   gender: string;
+  email: string;
+  birthDate: string;
+  aniversary: string;
   dues: DuesInterface[];
 }
 

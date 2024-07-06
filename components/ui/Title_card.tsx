@@ -42,7 +42,7 @@ const Title_card: React.FC<title_cardProps> = ({
   return (
     <>
       <div
-        className="w-32 h-20 bg-naai-pos-500 shadow-lg flex items-center justify-center rounded-lg capitalize font-medium text-sm cursor-pointer text-center"
+        className="w-32 h-20 bg-[#fff] shadow-md flex items-center justify-center rounded-lg capitalize font-medium text-sm cursor-pointer text-center border border-[#e4e8eb]"
         onClick={comingSoon ? handleComingSoon : (selectable || displayModal ? onOpen : handleClick)}
       >
         <div className="title">{title}</div>

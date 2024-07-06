@@ -43,6 +43,7 @@ import { updatedSelectedServicesAtom } from "@/lib/atoms/updatedSelectedServices
 import { UpdatedSelectedServicesEnum } from "@/lib/enums";
 import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 import ClearDuesModal from "./components/ClearDuesModal";
+import CustomerInfoModal from "./components/CustomerInfoModal";
 
 const DisplayBillInfo = ({
   title,
@@ -107,6 +108,7 @@ const DisplayInfoWithInbox = ({
             onChange={handleOnChange}
             id={id ? id : undefined}
             ref={inputRef}
+            className="pl-2"
           />
         )}
       </div>
@@ -123,6 +125,7 @@ const ProcessingModal = ({
 }) => {
   const [activeKey, setActiveKey] = useState<string | number | bigint>("");
   const [openClearDuesModal, setOpenClearDuesModal] = useState<boolean>(false);
+  const [openCustomerInfo, setOpenCustomerInfo] = useState<boolean>(false);
   const [amountToBePaid, setAmountToBePaid] = useState(0);
   const [payments, setPayments] = useState<PaymentsInterface[]>([]);
   const [cashAmount, setCashAmount] = useState<number | string>(0);
@@ -154,6 +157,7 @@ const ProcessingModal = ({
   );
   const percentDiscRef = useRef<HTMLInputElement>(null);
   const cashDiscRef = useRef<HTMLInputElement>(null);
+  const cashAmountRef = useRef<HTMLInputElement>(null);
   const SALONID = useRecoilValue(salonIdAtom);
   // const [salonDiscount, setSalonDiscount] = useState<number | string>(0);
 
@@ -162,6 +166,12 @@ const ProcessingModal = ({
       couponRef.current.value = selectedCoupon.code;
     }
   }, [selectedCoupon, isOpen]);
+
+  useEffect(() => {
+    if(cashAmountRef.current){
+      cashAmountRef.current.value = cashAmount.toString();
+    }
+  }, [cashAmount, isOpen]);
 
   useEffect(() => {
     let total: number = 0;
@@ -402,7 +412,7 @@ const ProcessingModal = ({
       coupon: selectedCoupon,
     });
     console.log("Processing Payments");
-    if(data){
+    if (data) {
       console.log("Payment Procesed Successfully");
       let userDuesCleared = await axios.post(Urls.ClearDues, {
         userId: customer.id,
@@ -418,6 +428,8 @@ const ProcessingModal = ({
     setPercentDisc(0);
     setPayments([]);
     setAmountPaid(0);
+    setCashAmount(0);
+    setAmountToBePaid(0);
     setOpenProcessModal(false);
     setInitialSelectedServices([]);
   };
@@ -492,7 +504,13 @@ const ProcessingModal = ({
 
   return (
     <>
-      <ClearDuesModal isOpen={openClearDuesModal} setIsOpen={setOpenClearDuesModal} amountToBePaid={amountToBePaid} setAmountToBePaid={setAmountToBePaid}/>
+      <CustomerInfoModal isOpen={openCustomerInfo} setIsOpen={setOpenCustomerInfo} />
+      <ClearDuesModal
+        isOpen={openClearDuesModal}
+        setIsOpen={setOpenClearDuesModal}
+        amountToBePaid={amountToBePaid}
+        setAmountToBePaid={setAmountToBePaid}
+      />
       <RemarksModal
         isOpen={openRemarksModal}
         setOpenRemarksModal={setOpenRemarksModal}
@@ -606,6 +624,7 @@ const ProcessingModal = ({
                       <DisplayInfoWithInbox
                         title="Cash Amount: "
                         setState={setCashAmount}
+                        inputRef={cashAmountRef}
                         id="cash-amt"
                       />
                       <DisplayInfoWithInbox
@@ -661,22 +680,41 @@ const ProcessingModal = ({
                         money={true}
                       />
                     </div>
-                    <div className="amount-paid border w-[90%] border-black py-7 bottom-0 absolute">
-                      <DisplayBillInfo
-                        title="amount paid"
-                        value={amountPaid}
-                        money={true}
-                        text="md"
-                      />
+                    <div className="parent-div absolute bottom-0 w-full">
+                      <div className="amount-paid border w-[90%] border-black py-2 mb-2">
+                        <DisplayBillInfo
+                          title="amount paid"
+                          value={amountPaid}
+                          money={true}
+                          text="md"
+                        />
+                      </div>
+                      {amountToBePaid > 0 ? (
+                        <div className="amount-paid border w-[90%] border-black py-2 ">
+                          <DisplayBillInfo
+                            title="Dues Cleared"
+                            value={amountToBePaid}
+                            money={true}
+                            text="md"
+                          />
+                        </div>
+                      ) : null}
                     </div>
                     {/* <div className="keyboard-container relative mt-2">
                       <OnScreenKeyboardModal />
                     </div> */}
                   </div>
                   <div className="action-buttons w-[18%] flex flex-col justify-end items-end">
-                    <Button
+                  <Button
                       size="lg"
                       className="w-full bg-naai-primary text-white rounded-md"
+                      onClick={() => setOpenCustomerInfo(true)}
+                    >
+                      Customer Info
+                    </Button>
+                    <Button
+                      size="lg"
+                      className="w-full bg-naai-primary text-white rounded-md mt-2"
                       onClick={() => setOpenClearDuesModal(true)}
                     >
                       Clear Dues
