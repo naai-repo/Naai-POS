@@ -18,7 +18,7 @@ const ClearDuesModal = ({
   isOpen,
   setIsOpen,
   amountToBePaid,
-  setAmountToBePaid
+  setAmountToBePaid,
 }: {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -30,10 +30,13 @@ const ClearDuesModal = ({
   const amountToBePaidRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     let totalDues = 0;
-    if (customer.dues.length === 0) return;
+    if (customer.dues.length === 0) {
+      setTotalDue(0);
+      return;
+    }
     totalDues = customer.dues.reduce((acc, { amount }) => acc + amount, 0);
     setTotalDue(totalDues);
-  }, [customer]);
+  }, [customer, isOpen]);
 
   useEffect(() => {
     if (amountToBePaidRef.current) {
@@ -69,7 +72,7 @@ const ClearDuesModal = ({
                 <div>Amount to be paid</div>
                 <input
                   type="number"
-                  className="shadow-md border-2 border-black"
+                  className="shadow-md border-2 border-black px-2"
                   onChange={handleOnChange}
                   ref={amountToBePaidRef}
                 />
@@ -85,7 +88,9 @@ const ClearDuesModal = ({
               </Accordion>
             </ModalBody>
             <ModalFooter>
-              <Button color="primary" onClick={() => setIsOpen(false)}>Clear</Button>
+              <Button color="primary" onClick={() => setIsOpen(false)}>
+                Clear
+              </Button>
             </ModalFooter>
           </>
         )}

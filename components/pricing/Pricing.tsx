@@ -120,6 +120,9 @@ const Pricing = () => {
       setOpenPopover(false);
       setCustomer({
         name: "",
+        email: "",
+        birthDate: "",
+        aniversary: "",
         gender: "",
         id: "",
         phoneNumber: e.target.value,
@@ -141,10 +144,10 @@ const Pricing = () => {
     });
   };
   return (
-    <div className="h-[calc(100vh-5rem)] bg-white w-[60%] relative">
+    <div className="bg-white w-[60%] relative rounded-xl border-2 border-[#e4e8eb] shadow-xl">
       <PendingDuesModal isOpen={openPendingModal} setIsOpen={setOpenPendingModal} setOpenPopover={setOpenPopover}/>
       <ItemsTable />
-      <div className="parent-div w-full absolute bottom-0">
+      <div className="parent-div w-full absolute bottom-0 rounded-xl shadow">
         <div className="w-full relative bottom-0 p-2 pb-7">
           <Price_display align="right" price={servicePrice} />
           <Popover placement="top" showArrow={true} isOpen={openPopover} triggerRef={triggerRef} onOpenChange={() => setOpenPopover(false)}>
@@ -186,7 +189,7 @@ const Pricing = () => {
             ))}
           </div>
         </div>
-        <div className="action-buttons-pricing w-full py-4 bg-naai-pos-300">
+        <div className="action-buttons-pricing w-full py-4 bg-[#fff] rounded-b-xl">
           <OnScreenKeyboard />
         </div>
       </div>

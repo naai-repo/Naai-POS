@@ -30,6 +30,9 @@ const EnterUserDetails = ({
       gender: user.gender,
       name: user.name,
       phoneNumber: user.phoneNumber,
+      birthDate: "",
+      aniversary: "",
+      email: "",
       dues: [],
     });
     setShowInputModal(false);
