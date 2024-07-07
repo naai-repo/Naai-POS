@@ -59,14 +59,15 @@ const ItemsTable = () => {
   };
 
   return (
-    <div className="flex items-start justify-center w-full overflow-auto overflow-y-hidden p-2">
+    <div className="flex items-start justify-center w-full overflow-auto overflow-y-hidden p-2 flex-grow">
       <Table
+        isHeaderSticky
         removeWrapper
         isCompact
         className="capitalize"
         classNames={{
           td: "truncate",
-          base: "max-h-[520px] overflow-y-auto",
+          base: "max-h-full overflow-y-auto",
           tr: "mb-2 border-b-2",
           th: "bg-gray-300 border-b-0",
         }}

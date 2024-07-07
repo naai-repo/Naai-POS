@@ -355,6 +355,7 @@ const ProcessingModal = ({
   };
 
   const handleRowSelection = (key: string | number | bigint) => {
+    console.log("KEY: ", key)
     setActiveKey(key);
   };
 
@@ -765,6 +766,10 @@ const ProcessingModal = ({
                     selectionMode="single"
                     selectionBehavior="toggle"
                     onRowAction={(key) => handleRowSelection(key)}
+                    classNames={{
+                      
+                      tr: `rounded-lg data-[val="${activeKey}"]:bg-yellow-200`,
+                    }}
                   >
                     <TableHeader>
                       <TableColumn>Payment Type</TableColumn>
@@ -773,15 +778,15 @@ const ProcessingModal = ({
                     </TableHeader>
                     <TableBody emptyContent={"No rows to display."}>
                       {payments.map((payment: PaymentsInterface) => (
-                        <TableRow key={payment.id} data-key={payment.id}>
-                          <TableCell>{payment.type}</TableCell>
+                        <TableRow key={payment.id} data-val={payment.id}>
+                          <TableCell className="rounded-l-lg">{payment.type}</TableCell>
                           <TableCell>
                             {payment.amount.toLocaleString(
                               "en-In",
                               currencyOptions
                             )}
                           </TableCell>
-                          <TableCell>{payment.remarks}</TableCell>
+                          <TableCell className="rounded-r-lg">{payment.remarks}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

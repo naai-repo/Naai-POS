@@ -26,7 +26,8 @@ const ModalComponentForVariables = ({
     async function fetchData(serviceId: string) {
       if (serviceId === "" || !serviceId) return;
       let data = await getVariablesData(serviceId);
-      setVariables(data.data);
+      
+      setVariables(data.data.sort((a: any, b: any) => a.variableCutPrice - b.variableCutPrice));
     }
     fetchData(serviceDetails.serviceId);
   }, [serviceDetails]);

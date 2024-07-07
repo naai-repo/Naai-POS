@@ -130,7 +130,7 @@ const MenuIcon = React.forwardRef<HTMLSpanElement,{isSelected : boolean,value : 
     <>
     {
       (isSelected) ? (
-        <Link href="#" className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base">
+        <Link href="#" className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-[#000000] text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base">
           {value.icon}
           <span ref={ref} className="sr-only">{value.title}</span>
         </Link>
