@@ -1,8 +1,8 @@
 // For Development
-const baseUrl = "http://localhost:8800"
+// const baseUrl = "http://localhost:8800"
 
 // For Production
-// const baseUrl = "https://dev.naai.in";
+const baseUrl = "https://dev.naai.in";
 
 export enum Urls {
   GetSingleService = `${baseUrl}/partner/service/single/`,
