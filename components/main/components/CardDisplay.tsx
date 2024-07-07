@@ -21,13 +21,14 @@ const CardDisplay: React.FC<HomeProps> = ({
   comingSoon = [] as boolean[],
 }) => {
   const [searchValue, setSearchValue] = useState<string>("");
-  const [searchData, setSearchData] = useState([]);
+  const [searchData, setSearchData] = useState<any[]>([]);
   const salonId = useRecoilValue(salonIdAtom);
   const [page, setPage] = useState<number>(1);
   const limit = 5;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [openVariablesTable, setOpenVariablesTable] = useState<boolean>(false);
   const searchBarRef = useRef<HTMLInputElement>(null);
+  const [hasMore, setHasMore] = useState<boolean>(false);
   const [serviceSelected, setServiceSelected] =
     useState<ServiceSelectedInterface>({
       serviceId: "",
@@ -55,8 +56,14 @@ const CardDisplay: React.FC<HomeProps> = ({
         const response = await axios.get(
           `${Urls.SearchingServices}?salonId=${salonId}&name=${searchValue}&page=${page}&limit=${limit}`
         );
-        setSearchData(response.data.data.services);
-        console.log(response.data.data.services);
+        if (response.data.data.services.length === 0) setHasMore(false);
+        else setHasMore(true);
+        setTimeout(() => {
+          setSearchData((prev: any[]) => [
+            ...prev,
+            ...response.data.data.services,
+          ]);
+        }, 200);
       } catch (err) {
         console.log(err);
       }
@@ -95,7 +102,7 @@ const CardDisplay: React.FC<HomeProps> = ({
       </div> */}
       <div className="backAndForwardButtons w-full flex items-center mb-8">
         <div className="search-bar mr-4 w-[65%] relative">
-          <div className="search-bar-parent bg-white flex items-center px-2 shadow-md rounded-xl border border-[#e4e8eb]"> 
+          <div className="search-bar-parent bg-white flex items-center px-2 shadow-md rounded-xl border border-[#e4e8eb]">
             <Search />
             <input
               type="text"
@@ -113,6 +120,7 @@ const CardDisplay: React.FC<HomeProps> = ({
               setServiceSelected={setServiceSelected}
               onOpen={onOpen}
               setOpenVariablesTable={setOpenVariablesTable}
+              hasMore={hasMore}
             />
           )}
           <ModalComponentForServices
@@ -134,13 +142,13 @@ const CardDisplay: React.FC<HomeProps> = ({
             className="back bg-white p-3 rounded-full shadow-lg"
             onClick={moveBack}
           >
-            <MoveLeft size={20}/>
+            <MoveLeft size={20} />
           </div>
           <div
             className="forward bg-white p-3 rounded-full shadow-lg"
             onClick={moveForward}
           >
-            <MoveRight size={20}/>
+            <MoveRight size={20} />
           </div>
         </div>
       </div>

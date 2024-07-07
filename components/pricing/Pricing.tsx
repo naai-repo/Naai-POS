@@ -144,10 +144,10 @@ const Pricing = () => {
     });
   };
   return (
-    <div className="bg-white w-[60%] relative rounded-xl border-2 border-[#e4e8eb] shadow-xl">
+    <div className="bg-white w-[60%] relative rounded-xl border-2 border-[#e4e8eb] shadow-xl flex flex-col">
       <PendingDuesModal isOpen={openPendingModal} setIsOpen={setOpenPendingModal} setOpenPopover={setOpenPopover}/>
       <ItemsTable />
-      <div className="parent-div w-full absolute bottom-0 rounded-xl shadow">
+      <div className="parent-div w-full top-full rounded-xl shadow">
         <div className="w-full relative bottom-0 p-2 pb-7">
           <Price_display align="right" price={servicePrice} />
           <Popover placement="top" showArrow={true} isOpen={openPopover} triggerRef={triggerRef} onOpenChange={() => setOpenPopover(false)}>

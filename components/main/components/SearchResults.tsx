@@ -1,7 +1,9 @@
-import ModalComponentForServices from "@/components/ui/ModalComponentForServices";
 import { ServiceSelectedInterface } from "@/lib/types";
-import { useDisclosure } from "@nextui-org/modal";
-import React, { useEffect, useState } from "react";
+import { useInView } from "framer-motion";
+import React, { useEffect, useRef } from "react";
+import MenIcon from "../../../public/imgs/men_icon.png"
+import WomenIcon from "../../../public/imgs/women_icon.png"
+import Image from "next/image";
 
 const SearchResults = ({
   searchData,
@@ -10,6 +12,7 @@ const SearchResults = ({
   setServiceSelected,
   onOpen,
   setOpenVariablesTable,
+  hasMore,
 }: {
   searchData: any[];
   setPage: React.Dispatch<React.SetStateAction<number>>;
@@ -18,8 +21,18 @@ const SearchResults = ({
     React.SetStateAction<ServiceSelectedInterface>
   >;
   setOpenVariablesTable: React.Dispatch<React.SetStateAction<boolean>>;
+  hasMore: boolean;
   onOpen: () => void;
 }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref);
+
+  useEffect(() => {
+    if (isInView) {
+      setPage((prev) => prev + 1);
+    }
+  }, [isInView]);
+
   const handleSelectService = (data: any) => {
     setServiceSelected({
       serviceId: data._id,
@@ -57,7 +70,7 @@ const SearchResults = ({
   };
 
   return (
-    <div className="search-results bg-white rounded-md mt-1 p-2 absolute w-full shadow-md">
+    <div className="search-results bg-white rounded-md mt-1 p-2 absolute w-full shadow-md h-[200px] overflow-y-scroll">
       {searchData.map((data, index) => (
         <div
           className="search-result-row flex justify-between py-1 items-center cursor-pointer"
@@ -67,11 +80,11 @@ const SearchResults = ({
           <div className="left flex items-center">
             <div className="search-result-row__gender">
               {data.targetGender === "male" ? (
-                <img className="h-8" src="/imgs/men_icon.png" alt="men_icon" />
+                <Image className="h-8" src={MenIcon} alt="men_icon" />
               ) : (
-                <img
+                <Image
                   className="h-8"
-                  src="/imgs/women_icon.png"
+                  src={WomenIcon}
                   alt="women_icon"
                 />
               )}
@@ -83,12 +96,16 @@ const SearchResults = ({
           <div className="search-result-row__price">{data.basePrice}</div>
         </div>
       ))}
-      <div
-        className="load-more w-full text-center font-normal text-xs text-blue-500 cursor-pointer"
-        onClick={() => setPage((prev) => prev + 1)}
-      >
-        Load More
-      </div>
+      {hasMore && (
+        <div className="flex justify-center">
+          <div
+            className="h-4 w-4 inline-block rounded-full border-2 border-r-black border-solid animate-spin"
+            role="status"
+            ref={ref}
+          >
+          </div>
+        </div>
+      )}
     </div>
   );
 };

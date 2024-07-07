@@ -44,6 +44,7 @@ const config: Config = {
           "0%": {opacity: "0"},
           "100%": {opacity: "1"},
         },
+        
       },
       animation:{
         "pop-right" : "pop-right 0.5s ease-in-out forwards",
