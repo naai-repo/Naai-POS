@@ -235,43 +235,6 @@ const ProcessingModal = ({
     initialSelectedServices,
   ]);
 
-  // useEffect(() => {
-  //   function divideCashDiscount() {
-  //     let totalDiscount: number =
-  //       Number(cashDisc) +
-  //       Number(percentCashDisc) +
-  //       selectedCoupon.couponDiscount;
-  //     let totalItemPrice = 0;
-
-  //     initialSelectedServices.map((service) => {
-  //       totalItemPrice += service.price * service.qty;
-  //     });
-
-  //     setSelectedServices((prev) => {
-  //       const newSelectedServices = prev.map((service, index) => {
-  //         let item = initialSelectedServices[index];
-  //         let discount = (item.price / totalItemPrice) * totalDiscount;
-  //         let newService = {
-  //           ...item,
-  //           price: item.price - discount,
-  //           disc: item.disc + discount,
-  //           tax: (item.price - discount) * 0.18,
-  //         };
-  //         return newService;
-  //       });
-  //       return newSelectedServices;
-  //     });
-  //   }
-  //   divideCashDiscount();
-  // }, [cashDisc, percentCashDisc, selectedCoupon.couponDiscount]);
-
-  // console.log("DATA: ", selectedServices);
-
-  // useEffect(() => {
-  //   let newAmount = itemTotal + totalGst - selectedCoupon.couponDiscount - Number(cashDisc || 0) - amountPaid - percentCashDisc;
-  //   setFinalAmount(newAmount - Number(salonDiscount));
-  // }, [salonDiscount]);
-
   useEffect(() => {
     if (updatedSelectedServices !== UpdatedSelectedServicesEnum.NotUpdated) {
       console.log("INITITAL: ", selectedServices);
@@ -413,6 +376,7 @@ const ProcessingModal = ({
       coupon: selectedCoupon,
     });
     console.log("Processing Payments");
+    console.log("encryptedBookingId: ", btoa(data.data.data._id));
     if (data) {
       console.log("Payment Procesed Successfully");
       let userDuesCleared = await axios.post(Urls.ClearDues, {
