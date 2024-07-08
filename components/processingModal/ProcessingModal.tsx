@@ -49,7 +49,7 @@ const DisplayBillInfo = ({
   title,
   value,
   money = false,
-  text = "xs",
+  text = "xs"
 }: {
   title: string;
   value: number | string;
@@ -228,12 +228,8 @@ const ProcessingModal = ({
       });
     }
     divideCashDiscount();
-  }, [
-    cashDisc,
-    percentCashDisc,
-    selectedCoupon.couponDiscount,
-    initialSelectedServices,
-  ]);
+  }, [cashDisc, percentCashDisc, selectedCoupon.couponDiscount, initialSelectedServices])
+
 
   useEffect(() => {
     if (updatedSelectedServices !== UpdatedSelectedServicesEnum.NotUpdated) {

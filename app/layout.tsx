@@ -35,6 +35,7 @@ export default function RootLayout({
           </div>
           <div className="flex w-screen overflow-hidden">
             <Action_Buttons />
+            <Action_Buttons />
             <Main_Section>{children}</Main_Section>
             <Pricing />
           </div> */}
