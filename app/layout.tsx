@@ -27,28 +27,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <CookieProvider>
-          <MainWrapper
-            name="POS"
-            parentWrapper={{
-              className: "flex flex-col sm:gap-4 sm:py-4 sm:pl-14 h-full bg-[#FAFBFD]",
-            }}
-            mainWrapper={{
-              className:
-                "grid flex-1 items-start gap-4 p-2 sm:px-6 sm:py-0 md:gap-8 h-full bg-[#FAFBFD]",
-            }}
-          >
-            <div className="flex w-full overflow-hidden h-[calc(100vh-6rem)]">
-              {/* <Action_Buttons /> */}
-              <Main_Section>{children}</Main_Section>
-              <Pricing />
-            </div>
-          </MainWrapper>
+          {children}
           {/* <div className="sticky top-0 z-50">
             <div className="shadow-md bg-white">
               <Header />
             </div>
           </div>
           <div className="flex w-screen overflow-hidden">
+            <Action_Buttons />
             <Action_Buttons />
             <Main_Section>{children}</Main_Section>
             <Pricing />
