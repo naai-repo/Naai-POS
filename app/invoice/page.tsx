@@ -1,4 +1,5 @@
 'use client'
+import Invoice from '@/components/invoice/Invoice';
 import { Urls } from '@/lib/api';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation'
@@ -20,8 +21,9 @@ const Page = () => {
     }, [bookingId])
   return (
     <>
-        <h1>This is the Invoice page</h1>
-        <p>{JSON.stringify(booking)}</p>
+      <div className="invoice-wrapper w-screen h-screen flex justify-center items-center">
+          <Invoice booking={booking} invoice={encryptedBookingId}/>
+      </div>
     </>
   )
 }

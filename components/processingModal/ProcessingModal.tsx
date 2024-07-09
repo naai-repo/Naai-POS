@@ -7,7 +7,7 @@ import {
   ModalBody,
   ModalFooter,
 } from "@nextui-org/modal";
-import { currencyOptions } from "@/lib/helper";
+import { currencyOptions, sendMessageToUser } from "@/lib/helper";
 import Price_display from "../pricing/components/Price_display";
 import { Check, X } from "lucide-react";
 import { Button } from "@nextui-org/button";
@@ -123,6 +123,8 @@ const ProcessingModal = ({
   isOpen: boolean;
   setOpenProcessModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const [sendInvoice, setSendInvoice] = useState(false);
+  const [includeGst, setIncludeGst] = useState(false);
   const [activeKey, setActiveKey] = useState<string | number | bigint>("");
   const [openClearDuesModal, setOpenClearDuesModal] = useState<boolean>(false);
   const [openCustomerInfo, setOpenCustomerInfo] = useState<boolean>(false);
@@ -373,6 +375,9 @@ const ProcessingModal = ({
     });
     console.log("Processing Payments");
     console.log("encryptedBookingId: ", btoa(data.data.data._id));
+    let invoiceLink = `${window.location.origin}/invoice?booking=${btoa(data.data.data._id)}`;
+    const message = `Dear User, Your login OTP to NAAI app is ${invoiceLink}. Please do not share with anyone. - NAAI.`;
+    sendMessageToUser(customer, message);
     if (data) {
       console.log("Payment Procesed Successfully");
       let userDuesCleared = await axios.post(Urls.ClearDues, {
@@ -480,7 +485,7 @@ const ProcessingModal = ({
         setPayments={setPayments}
       />
       <Modal
-        size={"3xl"}
+        size={"4xl"}
         isOpen={isOpen}
         onClose={() => setOpenProcessModal(false)}
         classNames={{
@@ -640,6 +645,10 @@ const ProcessingModal = ({
                         value={0}
                         money={true}
                       />
+                    </div>
+                    <div className="checkboxes">
+                      <Checkbox size="sm" isSelected={sendInvoice} onValueChange={setSendInvoice}>Send Invoice to Customer</Checkbox>
+                      <Checkbox size="sm" isSelected={includeGst} onValueChange={setIncludeGst}>Exclude Gst</Checkbox>
                     </div>
                     <div className="parent-div absolute bottom-0 w-full">
                       <div className="amount-paid border w-[90%] border-black py-2 mb-2">
