@@ -358,6 +358,7 @@ const ProcessingModal = ({
     }
     let data = await axios.post(Urls.AddWalkinBooking, {
       salon: SALONID,
+      excludeGst: includeGst,
       selectedServices: selectedServices,
       customer: customer,
       bill: {
@@ -374,13 +375,15 @@ const ProcessingModal = ({
       coupon: selectedCoupon,
     });
     console.log("Processing Payments");
-    let encryptedBookingId = btoa(data.data.data._id);
-    let shortUrl = await axios.post(Urls.ShortenUrl, {
-      url: `${window.location.origin}/invoice?booking=${encryptedBookingId}`
-    });
-    let invoiceLink = `dev.naai.in/${shortUrl.data.data.key}`;
-    const message = `Dear customer, Thank you for visiting our Salon! Your eBill is now ready. You can view the detailed invoice at ${invoiceLink} - NAAI`
-    sendMessageToUser(customer, message);
+    if(sendInvoice){
+      let encryptedBookingId = btoa(data.data.data._id);
+      let shortUrl = await axios.post(Urls.ShortenUrl, {
+        url: `${window.location.origin}/invoice?booking=${encryptedBookingId}`
+      });
+      let invoiceLink = `dev.naai.in/${shortUrl.data.data.key}`;
+      const message = `Dear customer, Thank you for visiting our Salon! Your eBill is now ready. You can view the detailed invoice at ${invoiceLink} - NAAI`
+      sendMessageToUser(customer, message);
+    }
     if (data) {
       console.log("Payment Procesed Successfully");
       let userDuesCleared = await axios.post(Urls.ClearDues, {
@@ -400,6 +403,8 @@ const ProcessingModal = ({
     setCashAmount(0);
     setAmountToBePaid(0);
     setOpenProcessModal(false);
+    setIncludeGst(false);
+    setSendInvoice(false);
     setInitialSelectedServices([]);
   };
 

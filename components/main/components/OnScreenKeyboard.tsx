@@ -133,6 +133,15 @@ const OnScreenKeyboard = () => {
     let searchCustomer = document.getElementById("search-customer") as HTMLInputElement;
     searchCustomer.value = "";
   }
+
+  const handleProcessButton = () => {
+    console.log(customer);
+    if(customer.phoneNumber === "")
+      return alert("Please fill the customer details");
+
+    setOpenProcessModal(true);
+  }
+
   // CSS for full keyboard
   // on-screen-keyboard-container grid grid-rows-[repeat(3,minmax(0,4rem))] grid-cols-[repeat(5,minmax(0,4rem))] gap-4 relative bottom-4 ml-4
 
@@ -171,7 +180,7 @@ const OnScreenKeyboard = () => {
               )}
             </div>
           ))}
-          <Button className="h-[4rem] w-[7.5rem] text-white rounded-md flex justify-center items-center bg-[#189c09] drop-shadow-md cursor-pointer" onClick={() => setOpenProcessModal(true)}>
+          <Button className="h-[4rem] w-[7.5rem] text-white rounded-md flex justify-center items-center bg-[#189c09] drop-shadow-md cursor-pointer" onClick={() => handleProcessButton()}>
             <HandCoins /> Process{" "}
             <ProcessingModal isOpen={openProcessModal} setOpenProcessModal={setOpenProcessModal} />
           </Button>

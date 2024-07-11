@@ -40,6 +40,7 @@ const ItemsTable = () => {
   };
   const selectedServices = useRecoilValue(selectedServiceAtom);
   const setSelectedServices = useSetRecoilState(selectedServiceAtom);
+  console.log("Selected Services: ", selectedServices);
   const handleTrashIcon = (id: number) => {
     resetPricing();
     resetSetSelectedTableIndex();
