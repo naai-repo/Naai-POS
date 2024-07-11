@@ -17,6 +17,8 @@ const Invoice = ({ booking, invoice }: { booking: any; invoice: String }) => {
     birthDate: "",
     aniversary: "",
   });
+  const excludeGst = booking?.excludeGst;
+  console.log("EXCLUDE GST: ", excludeGst);
   useEffect(() => {
     async function fetchCustomer() {
       if (!booking || !booking.userId) return;
@@ -64,7 +66,9 @@ const Invoice = ({ booking, invoice }: { booking: any; invoice: String }) => {
           <center>
             <table className="capitalize border-b-2 border-black text-sm">
               <tr className="border-y-2 border-black text-[0.95rem]">
-                <th className="px-2 border-x-2 border-black">Service & Product</th>
+                <th className="px-2 border-x-2 border-black">
+                  Service & Product
+                </th>
                 <th className="px-2 border-x-2 border-black">Provider</th>
                 <th className="px-2 border-x-2 border-black">Rate</th>
                 <th className="px-2 border-x-2 border-black">Dis</th>
@@ -73,16 +77,33 @@ const Invoice = ({ booking, invoice }: { booking: any; invoice: String }) => {
               </tr>
               {booking?.artistServiceMap.map((service: any) => (
                 <tr key={service._id}>
-                  <td className="px-2 border-x-2 border-black">{service.serviceName}</td>
-                  <td className="px-2 border-x-2 border-black">{service.artistName}</td>
-                  <td className="px-2 border-x-2 border-black">{(service.qty * service.discountedPrice).toFixed(2)}</td>
+                  <td className="px-2 border-x-2 border-black">
+                    {service.serviceName}
+                  </td>
+                  <td className="px-2 border-x-2 border-black">
+                    {service.artistName}
+                  </td>
+                  {excludeGst ? (
+                    <td className="px-2 border-x-2 border-black">
+                      {(
+                        service.qty *
+                        (service.discountedPrice + service.tax)
+                      ).toFixed(2)}
+                    </td>
+                  ) : (
+                    <td className="px-2 border-x-2 border-black">
+                      {(service.qty * service.discountedPrice).toFixed(2)}
+                    </td>
+                  )}
                   <td className="px-2 border-x-2 border-black">
                     {(
                       service.qty *
                       (service.servicePrice - service.discountedPrice)
                     ).toFixed(2)}
                   </td>
-                  <td className="px-2 border-x-2 border-black">{service.qty}</td>
+                  <td className="px-2 border-x-2 border-black">
+                    {service.qty}
+                  </td>
                   <td className="px-2 border-x-2 border-black">
                     {(
                       service.qty *
@@ -109,12 +130,20 @@ const Invoice = ({ booking, invoice }: { booking: any; invoice: String }) => {
           </div>
           <div className="info-wrapper flex justify-between">
             <div className="title font-semibold">Total Tax</div>
-            <div className="value font-normal text-sm">
-              :{" "}
-              {(booking?.paymentAmount - booking?.paymentAmount / 1.18).toFixed(
-                2
-              )}
-            </div>
+            {excludeGst ? (
+              <div className="value font-normal text-sm">
+                :{" "}
+                {(0.00).toFixed(2)}
+              </div>
+            ) : (
+              <div className="value font-normal text-sm">
+                :{" "}
+                {(
+                  booking?.paymentAmount -
+                  booking?.paymentAmount / 1.18
+                ).toFixed(2)}
+              </div>
+            )}
           </div>
           <div className="info-wrapper flex justify-between">
             <div className="title font-semibold">Amount Paid</div>

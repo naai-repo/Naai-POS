@@ -34,6 +34,7 @@ const ArtistDisplay: React.FC<ExtendedArtistDisplay> = ({
       let priceExcludingTax = price / 1.18;
       tax = Math.round((price - priceExcludingTax)*100)/100;
       price = Math.round(priceExcludingTax*100)/100;
+      basePrice = Math.round(priceExcludingTax*100)/100;
     }
     setSelectedServices((prev: SelectedServicesInterface[]) => {
       return prev.some(

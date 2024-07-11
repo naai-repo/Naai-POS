@@ -31,7 +31,6 @@ const ModalComponentForVariables = ({
     }
     fetchData(serviceDetails.serviceId);
   }, [serviceDetails]);
-  console.log("Variables: ", variables);
   const currencyOptions = {
     style: "currency",
     currency: "INR",
