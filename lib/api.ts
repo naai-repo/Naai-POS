@@ -17,5 +17,6 @@ export enum Urls {
   ClearDues = `${baseUrl}/partner/walkin/clear/dues`,
   UpdateCustomerInfo = `${baseUrl}/customer/user/update`,
   GetSingleBookingInfo = `${baseUrl}/appointments/booking/info`,
-  GetSingleUser = `${baseUrl}/customer/user/`
+  GetSingleUser = `${baseUrl}/customer/user/`,
+  ShortenUrl = `${baseUrl}/url/shorten`
 }

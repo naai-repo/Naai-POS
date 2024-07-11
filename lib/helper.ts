@@ -5,9 +5,9 @@ import { CustomerInfoInterface } from "./types";
 export const sendMessageToUser = async (user: CustomerInfoInterface, message: string) => {
   try {
     const body = {
-      Text: `${message} - ${process.env.SENDER_ID}`,
+      Text: `${message}`,
       Number: user.phoneNumber,
-      SenderId: process.env.SENDER_ID,
+      SenderId: process.env.NEXT_PUBLIC_SENDER_ID,
       DRNotifyUrl: "https://www.domainname.com/notifyurl",
       DRNotifyHttpMethod: "POST",
       Tool: "API",
@@ -15,12 +15,12 @@ export const sendMessageToUser = async (user: CustomerInfoInterface, message: st
 
     // Sends SMS OTP to user.
     const data = await axios.post(
-      `https://restapi.smscountry.com/v0.1/Accounts/${process.env.AUTH_KEY}/SMSes/`,
+      `https://restapi.smscountry.com/v0.1/Accounts/${process.env.NEXT_PUBLIC_AUTH_KEY}/SMSes/`,
       body,
       {
         auth: {
-          username: process.env.AUTH_KEY || "",
-          password: process.env.AUTH_TOKEN || "",
+          username: process.env.NEXT_PUBLIC_AUTH_KEY || "",
+          password: process.env.NEXT_PUBLIC_AUTH_TOKEN || "",
         },
       }
     );
