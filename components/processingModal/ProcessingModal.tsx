@@ -374,9 +374,12 @@ const ProcessingModal = ({
       coupon: selectedCoupon,
     });
     console.log("Processing Payments");
-    console.log("encryptedBookingId: ", btoa(data.data.data._id));
-    let invoiceLink = `${window.location.origin}/invoice?booking=${btoa(data.data.data._id)}`;
-    const message = `Dear User, Your login OTP to NAAI app is ${invoiceLink}. Please do not share with anyone. - NAAI.`;
+    let encryptedBookingId = btoa(data.data.data._id);
+    let shortUrl = await axios.post(Urls.ShortenUrl, {
+      url: `${window.location.origin}/invoice?booking=${encryptedBookingId}`
+    });
+    let invoiceLink = `dev.naai.in/${shortUrl.data.data.key}`;
+    const message = `Dear customer, Thank you for visiting our Salon! Your eBill is now ready. You can view the detailed invoice at ${invoiceLink} - NAAI`
     sendMessageToUser(customer, message);
     if (data) {
       console.log("Payment Procesed Successfully");
