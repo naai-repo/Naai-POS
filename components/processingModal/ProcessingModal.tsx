@@ -403,6 +403,8 @@ const ProcessingModal = ({
     setCashAmount(0);
     setAmountToBePaid(0);
     setOpenProcessModal(false);
+    setIncludeGst(false);
+    setSendInvoice(false);
     setInitialSelectedServices([]);
   };
 
