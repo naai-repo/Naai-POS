@@ -18,6 +18,7 @@ const Invoice = ({ booking, invoice }: { booking: any; invoice: String }) => {
     aniversary: "",
   });
   const excludeGst = booking?.excludeGst;
+  const [totalDiscount, setTotalDiscount] = useState(0);
   console.log("EXCLUDE GST: ", excludeGst);
   useEffect(() => {
     async function fetchCustomer() {
@@ -26,6 +27,11 @@ const Invoice = ({ booking, invoice }: { booking: any; invoice: String }) => {
       console.log(response.data.data);
       setCustomer(response.data.data);
     }
+    let discount = 0;
+    booking?.artistServiceMap.map((service: any) => {
+      discount += service.qty * (service.servicePrice - service.discountedPrice);
+    });
+    setTotalDiscount(discount);
     fetchCustomer();
   }, [booking]);
   console.log(booking);
@@ -125,7 +131,7 @@ const Invoice = ({ booking, invoice }: { booking: any; invoice: String }) => {
           <div className="info-wrapper flex justify-between">
             <div className="title font-semibold">Total Discount</div>
             <div className="value font-normal text-sm">
-              : {(booking?.amount - booking?.paymentAmount).toFixed(2)}
+              : {totalDiscount.toFixed(2)}
             </div>
           </div>
           <div className="info-wrapper flex justify-between">
