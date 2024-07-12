@@ -163,6 +163,12 @@ const Invoice = ({ booking, invoice }: { booking: any; invoice: String }) => {
               : {booking?.amountDue?.toFixed(2)}
             </div>
           </div>
+          <div className="info-wrapper flex justify-between">
+            <div className="title font-semibold">Amount Due</div>
+            <div className="value font-normal text-sm">
+              : {booking?.bill?.duesCleared?.toFixed(2)}
+            </div>
+          </div>
         </div>
         <div className="footer">
           <div className="footer-title m-auto w-fit">
