@@ -76,7 +76,7 @@ const SideNavigation : React.FC<{navigationMenus : MenuType[],isCollapsed : bool
                             buttonVariants({ variant: (isSelected) ? "default" : "outline", size: "icon" }),
                             "h-8 w-full border-none shadow-none rounded-md",
                             (isCollapsed) ? "justify-center" : "justify-start p-4",
-                            (isSelected) ? "bg-[#000000] hover:bg-[#000000]/85 text-primary-foreground" : "text-muted-foreground transition-colors hover:text-foreground"
+                            (isSelected) ? "bg-[#000000] hover:bg-[#000000]/85 text-primary-foreground" : "hover:bg-[#f1f5f9] text-muted-foreground transition-colors hover:text-foreground"
                             // "default" === "default" &&
                             //   "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
                           )}
