@@ -150,6 +150,7 @@ const OnScreenKeyboard = () => {
       <div className="on-screen-keyboard-parent w-full pr-4">
         <div className="on-screen-keyboard-container text-white flex justify-between relative ml-4">
           <HoldServicesModal isOpen={openHoldModal} setOpenHoldModal={setOpenHoldModal}/>
+          <ProcessingModal isOpen={openProcessModal} setOpenProcessModal={setOpenProcessModal} /> 
           <Button className="h-[4rem] w-[7.5rem] rounded-md flex text-white justify-center items-center bg-[#db5a11] drop-shadow-md cursor-pointer" onClick={() => setOpenHoldModal(true)}>
             <RefreshCcw /> Load{" "}
           </Button>
@@ -182,7 +183,6 @@ const OnScreenKeyboard = () => {
           ))}
           <Button className="h-[4rem] w-[7.5rem] text-white rounded-md flex justify-center items-center bg-[#189c09] drop-shadow-md cursor-pointer" onClick={() => handleProcessButton()}>
             <HandCoins /> Process{" "}
-            <ProcessingModal isOpen={openProcessModal} setOpenProcessModal={setOpenProcessModal} />
           </Button>
         </div>
       </div>

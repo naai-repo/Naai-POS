@@ -123,6 +123,7 @@ const ProcessingModal = ({
   isOpen: boolean;
   setOpenProcessModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
+  const [isProcessing, setIsProcessing] = useState(false);
   const [sendInvoice, setSendInvoice] = useState(false);
   const [includeGst, setIncludeGst] = useState(false);
   const [activeKey, setActiveKey] = useState<string | number | bigint>("");
@@ -170,7 +171,7 @@ const ProcessingModal = ({
   }, [selectedCoupon, isOpen]);
 
   useEffect(() => {
-    if(cashAmountRef.current){
+    if (cashAmountRef.current) {
       cashAmountRef.current.value = cashAmount.toString();
     }
   }, [cashAmount, isOpen]);
@@ -231,7 +232,6 @@ const ProcessingModal = ({
     }
     divideCashDiscount();
   }, [cashDisc, percentCashDisc, selectedCoupon.couponDiscount, initialSelectedServices])
-
 
   useEffect(() => {
     if (updatedSelectedServices !== UpdatedSelectedServicesEnum.NotUpdated) {
@@ -316,7 +316,7 @@ const ProcessingModal = ({
   };
 
   const handleRowSelection = (key: string | number | bigint) => {
-    console.log("KEY: ", key)
+    console.log("KEY: ", key);
     setActiveKey(key);
   };
 
@@ -356,6 +356,7 @@ const ProcessingModal = ({
       setOpenProcessModal(false);
       return;
     }
+    setIsProcessing(true);
     let data = await axios.post(Urls.AddWalkinBooking, {
       salon: SALONID,
       excludeGst: includeGst,
@@ -375,13 +376,13 @@ const ProcessingModal = ({
       coupon: selectedCoupon,
     });
     console.log("Processing Payments");
-    if(sendInvoice){
+    if (sendInvoice) {
       let encryptedBookingId = btoa(data.data.data._id);
       let shortUrl = await axios.post(Urls.ShortenUrl, {
-        url: `${window.location.origin}/invoice?booking=${encryptedBookingId}`
+        url: `${window.location.origin}/invoice?booking=${encryptedBookingId}`,
       });
       let invoiceLink = `dev.naai.in/${shortUrl.data.data.key}`;
-      const message = `Dear customer, Thank you for visiting our Salon! Your eBill is now ready. You can view the detailed invoice at ${invoiceLink} - NAAI`
+      const message = `Dear customer, Thank you for visiting our Salon! Your eBill is now ready. You can view the detailed invoice at ${invoiceLink} - NAAI`;
       sendMessageToUser(customer, message);
     }
     if (data) {
@@ -393,6 +394,7 @@ const ProcessingModal = ({
       });
       console.log(userDuesCleared.data);
     }
+    setIsProcessing(false);
     resetAllState(); // Reset all states
     setFinalAmount(0);
     setCashDisc(0);
@@ -478,7 +480,10 @@ const ProcessingModal = ({
 
   return (
     <>
-      <CustomerInfoModal isOpen={openCustomerInfo} setIsOpen={setOpenCustomerInfo} />
+      <CustomerInfoModal
+        isOpen={openCustomerInfo}
+        setIsOpen={setOpenCustomerInfo}
+      />
       <ClearDuesModal
         isOpen={openClearDuesModal}
         setIsOpen={setOpenClearDuesModal}
@@ -655,8 +660,20 @@ const ProcessingModal = ({
                       />
                     </div>
                     <div className="checkboxes">
-                      <Checkbox size="sm" isSelected={sendInvoice} onValueChange={setSendInvoice}>Send Invoice to Customer</Checkbox>
-                      <Checkbox size="sm" isSelected={includeGst} onValueChange={setIncludeGst}>Exclude Gst</Checkbox>
+                      <Checkbox
+                        size="sm"
+                        isSelected={sendInvoice}
+                        onValueChange={setSendInvoice}
+                      >
+                        Send Invoice to Customer
+                      </Checkbox>
+                      <Checkbox
+                        size="sm"
+                        isSelected={includeGst}
+                        onValueChange={setIncludeGst}
+                      >
+                        Exclude Gst
+                      </Checkbox>
                     </div>
                     <div className="parent-div absolute bottom-0 w-full">
                       <div className="amount-paid border w-[90%] border-black py-2 mb-2">
@@ -683,7 +700,7 @@ const ProcessingModal = ({
                     </div> */}
                   </div>
                   <div className="action-buttons w-[18%] flex flex-col justify-end items-end">
-                  <Button
+                    <Button
                       size="lg"
                       className="w-full bg-naai-primary text-white rounded-md"
                       onClick={() => setOpenCustomerInfo(true)}
@@ -728,13 +745,23 @@ const ProcessingModal = ({
                     >
                       Remarks
                     </Button>
-                    <Button
-                      size="lg"
-                      className="w-full bg-naai-primary text-white rounded-md mt-2"
-                      onClick={handleProcessButton}
-                    >
-                      Process
-                    </Button>
+                    {isProcessing ? (
+                      <Button
+                        size="lg"
+                        className="w-full bg-naai-primary text-white rounded-md mt-2"
+                        isDisabled
+                      >
+                        Processing!
+                      </Button>
+                    ) : (
+                      <Button
+                        size="lg"
+                        className="w-full bg-naai-primary text-white rounded-md mt-2"
+                        onClick={handleProcessButton}
+                      >
+                        Process
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div className="payments-table">
@@ -744,7 +771,6 @@ const ProcessingModal = ({
                     selectionBehavior="toggle"
                     onRowAction={(key) => handleRowSelection(key)}
                     classNames={{
-                      
                       tr: `rounded-lg data-[val="${activeKey}"]:bg-yellow-200`,
                     }}
                   >
@@ -756,14 +782,18 @@ const ProcessingModal = ({
                     <TableBody emptyContent={"No rows to display."}>
                       {payments.map((payment: PaymentsInterface) => (
                         <TableRow key={payment.id} data-val={payment.id}>
-                          <TableCell className="rounded-l-lg">{payment.type}</TableCell>
+                          <TableCell className="rounded-l-lg">
+                            {payment.type}
+                          </TableCell>
                           <TableCell>
                             {payment.amount.toLocaleString(
                               "en-In",
                               currencyOptions
                             )}
                           </TableCell>
-                          <TableCell className="rounded-r-lg">{payment.remarks}</TableCell>
+                          <TableCell className="rounded-r-lg">
+                            {payment.remarks}
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

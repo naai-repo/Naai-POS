@@ -142,7 +142,7 @@ export const ExpandableNavigation : React.FC = () => {
     {
       title : "Customers",
       icon : <Users2 className="h-5 w-5" />,
-      path : "https://partner.naai.in/profile/customer-list"
+      path : "https://partner.naai.in/customer-list"
     },
     {
       title : "Settings",
