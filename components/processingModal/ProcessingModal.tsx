@@ -49,7 +49,7 @@ const DisplayBillInfo = ({
   title,
   value,
   money = false,
-  text = "xs",
+  text = "xs"
 }: {
   title: string;
   value: number | string;
@@ -231,12 +231,7 @@ const ProcessingModal = ({
       });
     }
     divideCashDiscount();
-  }, [
-    cashDisc,
-    percentCashDisc,
-    selectedCoupon.couponDiscount,
-    initialSelectedServices,
-  ]);
+  }, [cashDisc, percentCashDisc, selectedCoupon.couponDiscount, initialSelectedServices])
 
   useEffect(() => {
     if (updatedSelectedServices !== UpdatedSelectedServicesEnum.NotUpdated) {
@@ -410,6 +405,8 @@ const ProcessingModal = ({
     setCashAmount(0);
     setAmountToBePaid(0);
     setOpenProcessModal(false);
+    setIncludeGst(false);
+    setSendInvoice(false);
     setInitialSelectedServices([]);
   };
 

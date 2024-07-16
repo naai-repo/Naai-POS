@@ -19,7 +19,7 @@ const Invoice = ({ booking, invoice }: { booking: any; invoice: String }) => {
   });
   const excludeGst = booking?.excludeGst;
   const [totalDiscount, setTotalDiscount] = useState(0);
-  
+
   useEffect(() => {
     async function fetchCustomer() {
       if (!booking || !booking.userId) return;
