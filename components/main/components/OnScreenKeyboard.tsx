@@ -71,6 +71,10 @@ const OnScreenKeyboard = () => {
       resetAllState();
       return;
     } else if (value === "update") {
+      console.log("Pricing123: ", pricing);
+      if (Number(pricing.Qty) <= 0 || Number(pricing.Price) < 0 || Number(pricing.Disc) < 0) {
+        return alert("These Fields can't be negative or zero");
+      }
       setUpdatedSelectedServices(UpdatedSelectedServicesEnum.Updated);
       setSelectedServices((prev) => {
         const newSelectedServices = prev.map((item, index) => {
