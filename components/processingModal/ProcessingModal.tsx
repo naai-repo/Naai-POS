@@ -49,7 +49,7 @@ const DisplayBillInfo = ({
   title,
   value,
   money = false,
-  text = "xs",
+  text = "xs"
 }: {
   title: string;
   value: number | string;
@@ -422,6 +422,8 @@ const ProcessingModal = ({
     setCashAmount(0);
     setAmountToBePaid(0);
     setOpenProcessModal(false);
+    setIncludeGst(false);
+    setSendInvoice(false);
     setInitialSelectedServices([]);
   };
 
