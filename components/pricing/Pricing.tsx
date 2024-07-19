@@ -43,6 +43,7 @@ const PricingInput = ({
   defaultValue: string;
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const pricing = useRecoilValue(pricingAtom);
   const setPricing = useSetRecoilState(pricingAtom);
   useEffect(() => {
     let input = inputRef.current;
@@ -56,6 +57,7 @@ const PricingInput = ({
         [name]: e.target.value,
       };
     });
+    console.log("PRICE HERE: ", pricing)
   };
 
   return (
@@ -64,6 +66,8 @@ const PricingInput = ({
       <input
         onChange={handleOnchange}
         // onInputCapture={handleInputChange}
+        type="number"
+        min="0"
         ref={inputRef}
         className="w-3/4 rounded-md shadow-md border-2 border-gray-400"
       />

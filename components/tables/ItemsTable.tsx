@@ -33,7 +33,7 @@ const ItemsTable = () => {
     setSelectedTableIndex(id);
     setPricing({
       Qty: 1,
-      Price: selectedServices[id].price,
+      Price: parseFloat((selectedServices[id].price).toFixed(2)),
       GST: parseFloat((selectedServices[id].price * 0.18).toFixed(2)),
       Disc: 0,
     });

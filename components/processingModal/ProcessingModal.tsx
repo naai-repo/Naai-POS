@@ -201,17 +201,17 @@ const ProcessingModal = ({
     function divideCashDiscount() {
       let totalItemPrice = 0;
       initialSelectedServices.map((service) => {
-        totalItemPrice += service.price * service.qty; //total item price excluding gst
+        totalItemPrice += parseFloat((service.price * service.qty).toFixed(2)); //total item price excluding gst
       });
       let totalItemPriceWithGst = totalItemPrice * 1.18;
       let totalDiscount =
         Number(cashDisc) +
         Number(percentCashDisc) +
         selectedCoupon.couponDiscount;
-      let priceAfterDiscount = totalItemPriceWithGst - totalDiscount;
+      let priceAfterDiscount = parseFloat((totalItemPriceWithGst - totalDiscount).toFixed(2));
       setFinalAmount(Math.round(priceAfterDiscount * 100) / 100);
-      priceAfterDiscount = priceAfterDiscount / 1.18;
-      let totalTax = priceAfterDiscount * 0.18;
+      priceAfterDiscount = parseFloat((priceAfterDiscount / 1.18).toFixed(2));
+      let totalTax = parseFloat((priceAfterDiscount * 0.18).toFixed(2));
       setTotalGst(totalTax);
 
       setSelectedServices((prev) => {
@@ -219,11 +219,12 @@ const ProcessingModal = ({
           let item = initialSelectedServices[index];
           let discount =
             item.price - (item.price / totalItemPrice) * priceAfterDiscount;
+          discount = parseFloat(discount.toFixed(2));
           let newService = {
             ...item,
-            price: item.price - discount,
-            disc: item.disc + discount,
-            tax: (item.price - discount) * 0.18,
+            price: parseFloat((item.price - discount).toFixed(2)),
+            disc: parseFloat((item.disc + discount).toFixed(2)),
+            tax: parseFloat(((item.price - discount) * 0.18).toFixed(2)),
           };
           return newService;
         });
@@ -231,7 +232,12 @@ const ProcessingModal = ({
       });
     }
     divideCashDiscount();
-  }, [cashDisc, percentCashDisc, selectedCoupon.couponDiscount, initialSelectedServices])
+  }, [
+    cashDisc,
+    percentCashDisc,
+    selectedCoupon.couponDiscount,
+    initialSelectedServices,
+  ]);
 
   useEffect(() => {
     if (updatedSelectedServices !== UpdatedSelectedServicesEnum.NotUpdated) {
@@ -281,14 +287,25 @@ const ProcessingModal = ({
       selectedCoupon.couponDiscount -
       percentCashDisc -
       amountPaid;
+      if((newAmount - Number(cashDisc)) < 0 ){
+        setCashDisc(0);
+        return alert("Cash Discount Can't be more than the total amount");
+      }
     setFinalAmount(Math.round((newAmount - Number(cashDisc)) * 100) / 100);
   }, [cashDisc]);
 
   useEffect(() => {
+    if(Number(percentDisc) > 100){
+      setPercentDisc(100);
+      // setFinalAmount((prev) => (
+      //   setPercentCashDisc((100 * prev) / 100),
+      //   Math.round((prev - (100 * prev) / 100) * 100) / 100)
+      // );  
+      return alert("Discount can't be more than 100%");
+    }
     const debounceTime = setTimeout(() => {
       setFinalAmount(
         (prev) => (
-          console.log(prev),
           setPercentCashDisc((Number(percentDisc) * prev) / 100),
           Math.round((prev - (Number(percentDisc) * prev) / 100) * 100) / 100
         )
