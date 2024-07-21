@@ -218,13 +218,13 @@ const ProcessingModal = ({
         const newSelectedServices = prev.map((_, index) => {
           let item = initialSelectedServices[index];
           let discount =
-            item.price - (item.price / totalItemPrice) * priceAfterDiscount;
+            item.price - (Number(item.price) / totalItemPrice) * priceAfterDiscount;
           discount = parseFloat(discount.toFixed(2));
           let newService = {
             ...item,
-            price: parseFloat((item.price - discount).toFixed(2)),
-            disc: parseFloat((item.disc + discount).toFixed(2)),
-            tax: parseFloat(((item.price - discount) * 0.18).toFixed(2)),
+            price: parseFloat((Number(item.price) - discount).toFixed(2)),
+            disc: parseFloat((Number(item.disc) + discount).toFixed(2)),
+            tax: parseFloat(((Number(item.price) - discount) * 0.18).toFixed(2)),
           };
           return newService;
         });
