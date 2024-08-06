@@ -92,7 +92,7 @@ export interface CustomerInfoInterface {
   birthDate: string;
   aniversary: string;
   dues: DuesInterface[];
-  membership: Membership;
+  membership: Membership | null;
 }
 
 export interface DuesInterface {

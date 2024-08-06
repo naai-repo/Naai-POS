@@ -34,6 +34,7 @@ const EnterUserDetails = ({
       aniversary: "",
       email: "",
       dues: [],
+      membership: null,
     });
     setShowInputModal(false);
     setShowDropDown(false);
