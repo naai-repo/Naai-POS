@@ -16,6 +16,7 @@ const Invoice = ({ booking, invoice }: { booking: any; invoice: String }) => {
     email: "",
     birthDate: "",
     aniversary: "",
+    membership: null, 
   });
   const excludeGst = booking?.excludeGst;
   const [totalDiscount, setTotalDiscount] = useState(0);
