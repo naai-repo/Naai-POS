@@ -1,0 +1,36 @@
+import { atom } from "recoil";
+import { Membership } from "../types";
+
+export const membershipAtom = atom<Membership>({
+  key: "membershipAtom",
+  default: {
+    id: "",
+    name: "",
+    salonId: "",
+    description: "",
+    apply_to: 0,
+    validity_in_days: 0,
+    validity_unit: "DAY",
+    cost: 0,
+    wallet_amount_credit: 0,
+    min_bill_amount: 0,
+    discount_type: null,
+    discount_type_value: null,
+    max_discount_amount: null,
+    all_services_discount_type: null,
+    all_services_discount_type_value: null,
+    all_services_include: [],
+    all_services_except: [],
+    all_products_discount_type: null,
+    all_products_discount_type_value: null,
+    all_products_include: [],
+    all_products_except: [],
+    minimum_service_cost: null,
+    minimum_product_cost: null,
+    services: [],
+    products: [],
+    status: false,
+    all_services_discount_max_count: null,
+    all_products_discount_max_count: null,
+  },
+});

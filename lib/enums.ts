@@ -8,4 +8,5 @@ export enum UpdatedSelectedServicesEnum {
     Initial = "initial",
     Updated = "updated",
     NotUpdated = "notUpdated",
+    MembershipDiscount = "membershipDiscount",
 }

@@ -1,8 +1,8 @@
 // For Development
-// const baseUrl = "http://localhost:8800"
+const baseUrl = "http://localhost:8800"
 
 // For Production
-const baseUrl = "https://dev.naai.in";
+// const baseUrl = "https://dev.naai.in";
 
 export enum Urls {
   GetSingleService = `${baseUrl}/partner/service/single/`,
@@ -18,5 +18,9 @@ export enum Urls {
   UpdateCustomerInfo = `${baseUrl}/customer/user/update`,
   GetSingleBookingInfo = `${baseUrl}/appointments/booking/info`,
   GetSingleUser = `${baseUrl}/customer/user/`,
-  ShortenUrl = `${baseUrl}/url/shorten`
+  ShortenUrl = `${baseUrl}/url/shorten`,
+  ApplyMembership = `${baseUrl}/membership/apply/membership`,
+  GetProducts = `${baseUrl}/salon/inventory/products`,
+  GetMemberships = `${baseUrl}/membership/get`,
+  GetAllStaff = `${baseUrl}/partner/salon/staff`
 }

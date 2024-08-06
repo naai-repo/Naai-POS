@@ -1,7 +1,12 @@
 "use client";
 import React, { use, useEffect, useRef, useState } from "react";
 import Price_display from "./components/Price_display";
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  Checkbox,
+} from "@nextui-org/react";
 import ItemsTable from "../tables/ItemsTable";
 import {
   useRecoilState,
@@ -17,8 +22,13 @@ import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import { User } from "lucide-react";
 import OnScreenKeyboard from "../main/components/OnScreenKeyboard";
 import PendingDuesModal from "./components/PendingDuesModal";
+import { Membership, SelectedServicesInterface } from "@/lib/types";
+import { Urls } from "@/lib/api";
+import { updatedSelectedServicesAtom } from "@/lib/atoms/updatedSelectedServices";
+import { UpdatedSelectedServicesEnum } from "@/lib/enums";
+import { serviceCountAtom } from "@/lib/atoms/serviceCount";
 
-const PricingInputArray = ["Qty", "Price", "Disc"];
+const PricingInputArray = ["Qty", "Amount", "Disc"];
 
 const CustomerDetail = ({
   detail,
@@ -57,7 +67,7 @@ const PricingInput = ({
         [name]: e.target.value,
       };
     });
-    console.log("PRICE HERE: ", pricing)
+    console.log("PRICE HERE: ", pricing);
   };
 
   return (
@@ -81,10 +91,19 @@ const Pricing = () => {
   const searchCustomer = useRef<HTMLInputElement>(null);
   const resetCustomer = useResetRecoilState(customerInfoAtom);
   const selectedServices = useRecoilValue(selectedServiceAtom);
+  const setSelectedServices = useSetRecoilState(selectedServiceAtom);
   const [servicePrice, setServicePrice] = useState<number>(0);
   const [showDropDown, setShowDropDown] = useState(false);
   const [openPopover, setOpenPopover] = useState(false);
   const [openPendingModal, setOpenPendingModal] = useState(false);
+  const [applyMembership, setApplyMembership] = useState(false);
+  const [initialSelectedServices, setInitialSelectedServices] = useState<
+    SelectedServicesInterface[]
+  >([]);
+  const [updatedSelectedServices, setUpdatedSelectedServices] = useRecoilState(
+    updatedSelectedServicesAtom
+  );
+  const setServiceCount = useSetRecoilState(serviceCountAtom);
   const triggerRef = useRef(null);
 
   useEffect(() => {
@@ -92,7 +111,10 @@ const Pricing = () => {
       let price = selectedServices.reduce((acc, curr) => {
         return acc + curr.price * curr.qty;
       }, 0);
-      setServicePrice(price * 1.18);
+      let tax = selectedServices.reduce((acc, curr) => {
+        return acc + curr.tax * curr.qty;
+      }, 0);
+      setServicePrice(price + tax);
     } else {
       setServicePrice(0);
     }
@@ -102,7 +124,7 @@ const Pricing = () => {
     if (searchCustomer.current) {
       if (customer.phoneNumber !== "" && customer.name !== "") {
         searchCustomer.current.value = `${customer.phoneNumber} - ${customer.name}`;
-        if(customer.dues.length){
+        if (customer.dues.length) {
           setOpenPopover(true);
         }
       } else {
@@ -115,6 +137,51 @@ const Pricing = () => {
       }
     }
   }, [customer]);
+
+  // useEffect(() => {
+  //   if(!applyMembership){
+  //     setInitialSelectedServices(selectedServices);
+  //   }
+  // }, [applyMembership]);
+
+  useEffect(() => {
+    if (updatedSelectedServices !== UpdatedSelectedServicesEnum.NotUpdated && updatedSelectedServices !== UpdatedSelectedServicesEnum.MembershipDiscount) {
+      console.log("INITITAL: ", selectedServices);
+      setInitialSelectedServices(selectedServices);
+    }
+  }, [selectedServices.length, updatedSelectedServices]);
+
+  useEffect(() => {
+    if (updatedSelectedServices === UpdatedSelectedServicesEnum.Updated) {
+      setUpdatedSelectedServices(UpdatedSelectedServicesEnum.NotUpdated);
+    }
+  }, [updatedSelectedServices]);
+
+  useEffect(() => {
+    const applyMembershipDiscount = async () => {
+      let response = await axios.post(Urls.ApplyMembership, {
+        userId: customer.id,
+        selectedServices: selectedServices,
+      });
+      let newServices = response.data.data.data.services;
+      let count = response.data.data.data.count;
+      console.log("Count: ", count);
+      if(count){
+        setServiceCount(count);
+      }
+      setSelectedServices(newServices);
+      setUpdatedSelectedServices(UpdatedSelectedServicesEnum.MembershipDiscount);
+    };
+    if(customer.id !== ""){
+      console.log("DATA: ", initialSelectedServices);
+      if (applyMembership) {
+        applyMembershipDiscount();
+      }else{
+        setSelectedServices(initialSelectedServices);
+      }
+    }
+  }, [applyMembership, customer]);
+
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!("inputType" in e.nativeEvent)) {
       return;
@@ -131,6 +198,7 @@ const Pricing = () => {
         id: "",
         phoneNumber: e.target.value,
         dues: [],
+        membership: {} as Membership, // Add the missing membership property
       });
       return;
     }
@@ -149,12 +217,22 @@ const Pricing = () => {
   };
   return (
     <div className="bg-white w-[60%] relative rounded-xl border-2 border-[#e4e8eb] shadow-xl flex flex-col">
-      <PendingDuesModal isOpen={openPendingModal} setIsOpen={setOpenPendingModal} setOpenPopover={setOpenPopover}/>
+      <PendingDuesModal
+        isOpen={openPendingModal}
+        setIsOpen={setOpenPendingModal}
+        setOpenPopover={setOpenPopover}
+      />
       <ItemsTable />
       <div className="parent-div w-full top-full rounded-xl shadow">
         <div className="w-full relative bottom-0 p-2 pb-7">
           <Price_display align="right" price={servicePrice} />
-          <Popover placement="top" showArrow={true} isOpen={openPopover} triggerRef={triggerRef} onOpenChange={() => setOpenPopover(false)}>
+          <Popover
+            placement="top"
+            showArrow={true}
+            isOpen={openPopover}
+            triggerRef={triggerRef}
+            onOpenChange={() => setOpenPopover(false)}
+          >
             <div className="search-customer-parent flex mt-2" ref={triggerRef}>
               <div className="profile-pic border-2 rounded-s-md bg-white border-black p-1 border-r-1">
                 <User />
@@ -168,9 +246,16 @@ const Pricing = () => {
                 autoComplete="off"
               />
             </div>
-            <PopoverContent onClick={() => {setOpenPendingModal(true), setOpenPopover(false)}} className="cursor-pointer">
+            <PopoverContent
+              onClick={() => {
+                setOpenPendingModal(true), setOpenPopover(false);
+              }}
+              className="cursor-pointer"
+            >
               <div className="px-1 py-2">
-                <div className="text-tiny font-bold">Pending Dues: {customer.dues.length}</div>
+                <div className="text-tiny font-bold">
+                  Pending Dues: {customer.dues.length}
+                </div>
               </div>
             </PopoverContent>
           </Popover>
@@ -181,7 +266,7 @@ const Pricing = () => {
             <CustomerDetail detail="Last Visit" value="--" />
             <CustomerDetail detail="Membership" value="--" />
           </div> */}
-          <div className="grid mt-6 p-3 grid-rows-1 grid-cols-3 gap-y-2 gap-x-2">
+          <div className="grid mt-6 p-3 grid-rows-1 grid-cols-4 gap-y-2 gap-x-2">
             {PricingInputArray.map((input) => (
               <PricingInput
                 key={input}
@@ -191,6 +276,15 @@ const Pricing = () => {
                 }
               />
             ))}
+            {customer?.membership?.status && (
+              <Checkbox
+                isSelected={applyMembership}
+                onValueChange={setApplyMembership}
+                size="sm"
+              >
+                Apply Membership Discount?
+              </Checkbox>
+            )}
           </div>
         </div>
         <div className="action-buttons-pricing w-full py-4 bg-[#fff] rounded-b-xl">

@@ -44,27 +44,9 @@ import { UpdatedSelectedServicesEnum } from "@/lib/enums";
 import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 import ClearDuesModal from "./components/ClearDuesModal";
 import CustomerInfoModal from "./components/CustomerInfoModal";
-
-const DisplayBillInfo = ({
-  title,
-  value,
-  money = false,
-  text = "xs"
-}: {
-  title: string;
-  value: number | string;
-  money?: boolean;
-  text?: String;
-}) => {
-  return (
-    <div className="display-bill-info-component flex justify-between items-center px-4">
-      <div className={`title-name text-${text} capitalize`}>{title}</div>
-      <div className="value">
-        {money ? value.toLocaleString("en-In", currencyOptions) : value}
-      </div>
-    </div>
-  );
-};
+import DisplayBillInfo from "./components/DisplayBillInfo";
+import MembershipDetails from "./components/MembershipDetails";
+import { serviceCountAtom } from "@/lib/atoms/serviceCount";
 
 const DisplayInfoWithInbox = ({
   title,
@@ -152,6 +134,8 @@ const ProcessingModal = ({
   const resetSelectedCoupon = useResetRecoilState(couponAtom);
   const { resetAllState } = useResetAllState();
   const couponRef = React.useRef<HTMLInputElement>(null);
+  const [roundOff, setRoundOff] = useState(false);
+  const [roundOffVal, setRoundOffVal] = useState(0);
   const [initialSelectedServices, setInitialSelectedServices] = useState<
     SelectedServicesInterface[]
   >([]);
@@ -162,7 +146,15 @@ const ProcessingModal = ({
   const cashDiscRef = useRef<HTMLInputElement>(null);
   const cashAmountRef = useRef<HTMLInputElement>(null);
   const SALONID = useRecoilValue(salonIdAtom);
-  // const [salonDiscount, setSalonDiscount] = useState<number | string>(0);
+  const serviceCount = useRecoilValue(serviceCountAtom);
+
+  useEffect(() => {
+    if (roundOff) {
+      setFinalAmount((prev) => {setRoundOffVal(Math.round(prev) - prev); return Math.round(prev)});
+    }else{
+      setFinalAmount(itemTotal + totalGst);
+    }
+  }, [roundOff , itemTotal, totalGst]);
 
   useEffect(() => {
     if (couponRef.current) {
@@ -209,14 +201,16 @@ const ProcessingModal = ({
         Number(percentCashDisc) +
         selectedCoupon.couponDiscount;
       let priceAfterDiscount = parseFloat((totalItemPriceWithGst - totalDiscount).toFixed(2));
+      let priceAfterDiscountWithTax = priceAfterDiscount;
       setFinalAmount(Math.round(priceAfterDiscount * 100) / 100);
       priceAfterDiscount = parseFloat((priceAfterDiscount / 1.18).toFixed(2));
-      let totalTax = parseFloat((priceAfterDiscount * 0.18).toFixed(2));
+      let totalTax = parseFloat((priceAfterDiscountWithTax - priceAfterDiscount).toFixed(2));
       setTotalGst(totalTax);
-
+      console.log("DATA HERE: ", selectedServices);
       setSelectedServices((prev) => {
         const newSelectedServices = prev.map((_, index) => {
           let item = initialSelectedServices[index];
+          console.log("NEW DATA HERE: ", item, initialSelectedServices);
           let discount =
             item.price - (Number(item.price) / totalItemPrice) * priceAfterDiscount;
           discount = parseFloat(discount.toFixed(2));
@@ -260,7 +254,7 @@ const ProcessingModal = ({
     selectedServices.map((service) => {
       totalBasePrice += service.basePrice * service.qty;
       totalItemPrice += service.price * service.qty;
-      totalGST += service.price * service.qty * 0.18;
+      totalGST += service.tax * service.qty;
       totalQuantity += service.qty;
     });
     setOriginalBillValue(totalBasePrice);
@@ -388,6 +382,10 @@ const ProcessingModal = ({
         percentCashDisc: percentCashDisc,
         amountDue: finalAmount,
         duesCleared: amountToBePaid,
+        roundOff: roundOffVal,
+      },
+      membershipDiscount: {
+        count: serviceCount
       },
       payments: payments,
       coupon: selectedCoupon,
@@ -637,46 +635,14 @@ const ProcessingModal = ({
                         Add
                       </Button>
                     </div>
-                    {/* <div className="balance-tab px-6 py-8">
-                      <div className="display-bill-info-component flex justify-between items-center px-4">
-                        <div className="title-name text-lg font-semibold capitalize">
-                          balance
-                        </div>
-                        <div className="value">
-                          {(0).toLocaleString("en-In", currencyOptions)}
-                        </div>
-                      </div>
-                    </div> */}
                   </div>
                   <div className="right-container p-2 relative">
                     <div className="title capitalize text-lg text-gray-400 font-semibold flex">
                       <Checkbox defaultSelected size="sm"></Checkbox>
                       <div className="title-text">membership discount</div>
                     </div>
-                    <div className="membership-details">
-                      <DisplayBillInfo
-                        title="Membership Disc: "
-                        value={0}
-                        money={true}
-                      />
-                      <DisplayBillInfo title="customer name" value={"--"} />
-                      <DisplayBillInfo
-                        title="pending amount"
-                        value={0}
-                        money={true}
-                      />
-                      <DisplayBillInfo
-                        title="wallet amount"
-                        value={0}
-                        money={true}
-                      />
-                      <DisplayBillInfo
-                        title="wallet mem. amount"
-                        value={0}
-                        money={true}
-                      />
-                    </div>
-                    <div className="checkboxes">
+                    <MembershipDetails />
+                    <div className="checkboxes flex flex-col">
                       <Checkbox
                         size="sm"
                         isSelected={sendInvoice}
@@ -690,6 +656,13 @@ const ProcessingModal = ({
                         onValueChange={setIncludeGst}
                       >
                         Exclude Gst
+                      </Checkbox>
+                      <Checkbox
+                        size="sm"
+                        isSelected={roundOff}
+                        onValueChange={setRoundOff}
+                      >
+                        Round Off
                       </Checkbox>
                     </div>
                     <div className="parent-div absolute bottom-0 w-full">

@@ -2,6 +2,8 @@
 import { pricingAtom } from "@/lib/atoms/pricing";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
 import { selectedTableIndexAtom } from "@/lib/atoms/selectedTableIndex";
+import { updatedSelectedServicesAtom } from "@/lib/atoms/updatedSelectedServices";
+import { UpdatedSelectedServicesEnum } from "@/lib/enums";
 import {
   Table,
   TableBody,
@@ -18,6 +20,7 @@ const columns = [
   { name: "Item Name", key: "itemName" },
   { name: "Qty", key: "qty" },
   { name: "Rate", key: "rate" },
+  {name: "Disc", key: "disc"},
   { name: "GST", key: "gst" },
   { name: "Amount", key: "amount" },
 ];
@@ -33,13 +36,15 @@ const ItemsTable = () => {
     setSelectedTableIndex(id);
     setPricing({
       Qty: 1,
-      Price: parseFloat((selectedServices[id].price).toFixed(2)),
-      GST: parseFloat((selectedServices[id].price * 0.18).toFixed(2)),
+      Price: parseFloat((selectedServices[id].price.toFixed(2))),
+      GST: parseFloat((selectedServices[id].tax.toFixed(2))),
       Disc: 0,
+      Amount: parseFloat(((selectedServices[id].price + selectedServices[id].tax).toFixed(2))),
     });
   };
   const selectedServices = useRecoilValue(selectedServiceAtom);
   const setSelectedServices = useSetRecoilState(selectedServiceAtom);
+  const setUpdatedSelectedServices = useSetRecoilState(updatedSelectedServicesAtom);
   console.log("Selected Services: ", selectedServices);
   const handleTrashIcon = (id: number) => {
     resetPricing();
@@ -57,6 +62,7 @@ const ItemsTable = () => {
       // Return the new array to update the state
       return newSelectedServices;
     });
+    setUpdatedSelectedServices(UpdatedSelectedServicesEnum.Updated);
   };
 
   return (
@@ -105,10 +111,13 @@ const ItemsTable = () => {
                   {Math.round(service.price * service.qty * 100) / 100}
                 </TableCell>
                 <TableCell>
-                  {(service.price * service.qty * 0.18).toFixed(2)}
+                  {Math.round(service.disc * service.qty * 100) / 100}
+                </TableCell>
+                <TableCell>
+                  {(service.tax * service.qty).toFixed(2)}
                 </TableCell>
                 <TableCell className="rounded-e-md">
-                  {(service.price * service.qty * 1.18).toFixed(2)}
+                  {((service.price + service.tax) * service.qty ).toFixed(2)}
                 </TableCell>
               </TableRow>
             );

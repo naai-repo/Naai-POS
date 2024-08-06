@@ -20,7 +20,9 @@ export const getArtistsForService = async (
 ) => {
   const response = await axios.post(Urls.GetArtistList, {
     salonId: SALONID,
-    services: [serviceDetails?.serviceId.toString()],
+    services: [
+      serviceDetails?.serviceId.toString()
+    ],
   });
   if (response.status !== 200) {
     throw new Error("Not Found!");
@@ -51,6 +53,28 @@ export const getArtistsForService = async (
   return data;
 };
 
+export const getStaffOfSalon = async (
+  serviceDetails: any,
+  SALONID: string
+) => {
+  const response = await axios.post(Urls.GetAllStaff, {
+    salonId: SALONID,
+  });
+  if (response.status !== 200) {
+    throw new Error("Not Found!");
+  }
+  let data = response.data.data;
+  data = data.map((e: any) => {
+    return {
+      artistId: e._id,
+      artistName: e.name,
+      rating: 0,
+      price: serviceDetails?.cutPrice,
+    };
+  });
+  return data;
+};
+
 const ModalComponentForServices = ({
   isOpen,
   onOpenChange,
@@ -67,7 +91,15 @@ const ModalComponentForServices = ({
       const data = await getArtistsForService(serviceDetails, SALONID);
       setArtists(data);
     };
-    getArtists();
+    const getStaff = async () => {
+      const data = await getStaffOfSalon(serviceDetails, SALONID);
+      setArtists(data);
+    };
+    if(serviceDetails?.type === "service"){
+      getArtists();
+    }else{
+      getStaff();
+    }
   }, [SALONID, serviceDetails]);
 
   const currencyOptions = {
@@ -136,16 +168,17 @@ const ModalComponentForServices = ({
                   key={artist.artistId}
                   name={artist.artistName}
                   price={artist.price}
-                  basePrice={serviceDetails.cutPrice}
-                  serviceId={serviceDetails.serviceId}
+                  basePrice={serviceDetails?.cutPrice}
+                  serviceId={serviceDetails?.serviceId}
                   variableId={
-                    serviceDetails._id === serviceDetails.serviceId
+                    serviceDetails?._id === serviceDetails?.serviceId
                       ? null
                       : serviceDetails._id
                   }
-                  serviceName={serviceDetails.serviceTitle}
+                  serviceName={serviceDetails?.serviceTitle}
                   artistId={artist.artistId}
                   onOpenChange={onOpenChange}
+                  type={serviceDetails?.type}
                 />
               )
             )}
