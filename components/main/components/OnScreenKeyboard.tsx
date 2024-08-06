@@ -79,12 +79,16 @@ const OnScreenKeyboard = () => {
       setSelectedServices((prev) => {
         const newSelectedServices = prev.map((item, index) => {
           if (index === selectedTableIndex) {
+            let amount = (pricing.Amount ?? item.amount) - (pricing.Disc ?? 0);
+            let price = (amount/1.18);
+            let tax = (amount - price);
             return {
               ...item,
               qty: pricing.Qty ?? 0,
-              price: (pricing.Price ?? item.price) - (pricing.Disc ?? 0),
-              tax: ((pricing.Price ?? item.price) - (pricing.Disc ?? 0)) * 0.18,
+              price: price,
+              tax: tax,
               disc: pricing.Disc ?? 0,
+              amount: amount,
             };
           }
           return item;

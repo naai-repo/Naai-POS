@@ -68,7 +68,7 @@ export const getVariablesData = async (serviceId: string) => {
   );
   if (response.status !== 200) {
     throw new Error("Not Found!");
-  }
+  } 
   let data = response.data.data;
   for(let variable of data.variables){
    variable["serviceId"] = data._id,

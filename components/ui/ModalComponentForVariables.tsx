@@ -10,6 +10,7 @@ const ModalComponentForVariables = ({
   openArtistModal,
   setSearchValue,
   setServiceSelected,
+  type
 }: {
   isOpen: boolean;
   onOpenChange: () => void;
@@ -19,6 +20,7 @@ const ModalComponentForVariables = ({
   setServiceSelected: React.Dispatch<
     React.SetStateAction<ServiceSelectedInterface>
   >;
+  type: string;
 }) => {
   const [variables, setVariables] = useState([]);
 
@@ -29,8 +31,9 @@ const ModalComponentForVariables = ({
       
       setVariables(data.data.sort((a: any, b: any) => a.variableCutPrice - b.variableCutPrice));
     }
-    fetchData(serviceDetails.serviceId);
-  }, [serviceDetails]);
+    if(type === "service")
+      fetchData(serviceDetails.serviceId);
+  }, [serviceDetails, type]);
   const currencyOptions = {
     style: "currency",
     currency: "INR",

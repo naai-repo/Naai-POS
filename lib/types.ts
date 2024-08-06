@@ -42,6 +42,14 @@ export interface HomeProps {
   comingSoon?: boolean[];
 }
 
+
+export interface PricingAtomInterface {
+  Qty: undefined | number;
+  Price: undefined | number;
+  GST: undefined | number;
+  Disc: undefined | number;
+  Amount: undefined | number;
+}
 export interface ArtistDisplayProps {
   name: string;
   price: number;
@@ -50,19 +58,20 @@ export interface ArtistDisplayProps {
   variableId?: string;
   serviceName: string;
   artistId: string;
-}
-
-export interface PricingAtomInterface {
-  Qty: undefined | number;
-  Price: undefined | number;
-  GST: undefined | number;
-  Disc: undefined | number;
+  membershipId?: string;
+  membershipTitle?: string;
+  membershipDesc?: string;
+  validity_in_days?: number;
+  validity_unit?: string;
+  membershipCost?: number
 }
 
 export interface SelectedServicesInterface extends ArtistDisplayProps {
   qty: number;
   disc: number;
   tax: number;
+  amount: number;
+  type?: string;
 }
 
 export type genderType = "men" | "women" | "unisex" | undefined;
@@ -83,6 +92,7 @@ export interface CustomerInfoInterface {
   birthDate: string;
   aniversary: string;
   dues: DuesInterface[];
+  membership: Membership;
 }
 
 export interface DuesInterface {
@@ -126,14 +136,59 @@ export interface ServiceSelectedInterface {
   variableTime?: number;
   variableType?: string;
   _id?: string;
+  type?: "membership" | "service" | "product";
 }
 
 export interface SalonData {
-  id : string;
-  name : string;
+  id: string;
+  name: string;
   img: string;
-  address: string,
-  phoneNumber: number,
-  instagram: string,
-  taxIncluded: boolean,
+  address: string;
+  phoneNumber: number;
+  instagram: string;
+  taxIncluded: boolean;
+}
+
+export interface ProductAndServiceForMembership {
+  id: string;
+  allotted_count: number;
+  discount_type: number;
+  discount_type_value: number;
+  max_discount_amount: number;
+}
+
+export interface Membership {
+  id: string;
+  name: string;
+  salonId: string;
+  description: string;
+  apply_to: number;
+  validity_in_days: number;
+  validity_unit: "DAY" | "MONTH" | "YEAR";
+  cost: number;
+  wallet_amount_credit: number;
+  min_bill_amount: number;
+  discount_type: number | null;
+  discount_type_value: number | null;
+  max_discount_amount: number | null;
+  all_services_discount_type: number | null;
+  all_services_discount_type_value: number | null;
+  all_services_include: string[];
+  all_services_except: string[];
+  all_products_discount_type: number | null;
+  all_products_discount_type_value: number | null;
+  all_products_include: string[];
+  all_products_except: string[];
+  minimum_service_cost: number | null; 
+  minimum_product_cost: number | null;
+  services: ProductAndServiceForMembership[];
+  products: ProductAndServiceForMembership[];
+  status: boolean;
+  all_services_discount_max_count: number | null;
+  all_products_discount_max_count: number | null;
+}
+
+export interface ServiceCountInterface{
+  type_of_discount: string | null;
+  customerCount: number;
 }

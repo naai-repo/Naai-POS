@@ -3,6 +3,8 @@ import { Urls } from "@/lib/api";
 import { salonAtom } from "@/lib/atoms/salonAtom";
 import { salonIdAtom } from "@/lib/atoms/salonIdAtom";
 import { selectedServiceAtom } from "@/lib/atoms/selectedServices";
+import { updatedSelectedServicesAtom } from "@/lib/atoms/updatedSelectedServices";
+import { UpdatedSelectedServicesEnum } from "@/lib/enums";
 import { ArtistDisplayProps, SelectedServicesInterface } from "@/lib/types";
 import axios from "axios";
 import React from "react";
@@ -10,6 +12,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 
 interface ExtendedArtistDisplay extends ArtistDisplayProps{
   onOpenChange: () => void;
+  type?: string;
 }
 
 const ArtistDisplay: React.FC<ExtendedArtistDisplay> = ({
@@ -21,8 +24,10 @@ const ArtistDisplay: React.FC<ExtendedArtistDisplay> = ({
   serviceName,
   artistId,
   onOpenChange,
+  type = "service",
 }) => {
   const setSelectedServices = useSetRecoilState(selectedServiceAtom);
+  const setUpdatedSelectedServices = useSetRecoilState(updatedSelectedServicesAtom);
   const salonId = useRecoilValue(salonIdAtom);
   const salonData = useRecoilValue(salonAtom);
 
@@ -36,6 +41,7 @@ const ArtistDisplay: React.FC<ExtendedArtistDisplay> = ({
       price = Math.round(priceExcludingTax*100)/100;
       basePrice = Math.round(priceExcludingTax*100)/100;
     }
+    let amount = price + tax;
     setSelectedServices((prev: SelectedServicesInterface[]) => {
       return prev.some(
         (item) =>
@@ -53,13 +59,16 @@ const ArtistDisplay: React.FC<ExtendedArtistDisplay> = ({
               name,
               price,
               basePrice,
+              amount,
               artistId,
               tax,
               qty: 1,
               disc: 0,
+              type
             },
           ];
     });
+    setUpdatedSelectedServices(UpdatedSelectedServicesEnum.Updated);
     onOpenChange();
   };
   return (

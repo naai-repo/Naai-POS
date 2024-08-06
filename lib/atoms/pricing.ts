@@ -7,6 +7,7 @@ export const pricingAtom = atom<PricingAtomInterface>({
         Qty: undefined,
         Price: undefined,
         GST: undefined,
-        Disc: undefined
+        Disc: undefined,
+        Amount: undefined,
     },
 });
