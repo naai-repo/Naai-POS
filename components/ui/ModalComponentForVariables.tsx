@@ -42,6 +42,7 @@ const ModalComponentForVariables = ({
 
   const handleVariableSelect = (variable: any) => {
     onOpenChange();
+    variable.type = "service";
     setServiceSelected(variable);
     setSearchValue("");
     openArtistModal();

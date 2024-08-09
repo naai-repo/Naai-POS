@@ -96,8 +96,10 @@ const ModalComponentForServices = ({
       setArtists(data);
     };
     if(serviceDetails?.type === "service"){
+      console.log("Gettig Artists");
       getArtists();
-    }else{
+    }else {
+      console.log("Getting Staff");
       getStaff();
     }
   }, [SALONID, serviceDetails]);

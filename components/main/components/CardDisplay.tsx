@@ -24,7 +24,8 @@ const CardDisplay: React.FC<HomeProps> = ({
   const [searchData, setSearchData] = useState<any[]>([]);
   const [searchValueProducts, setSearchValueProducts] = useState<string>("");
   const [searchDataProducts, setSearchDataProducts] = useState<any[]>([]);
-  const [searchValueMembership, setSearchValueMembership] = useState<string>("");
+  const [searchValueMembership, setSearchValueMembership] =
+    useState<string>("");
   const [searchDataMembership, setSearchDataMembership] = useState<any[]>([]);
   const salonId = useRecoilValue(salonIdAtom);
   const [page, setPage] = useState<number>(1);
@@ -55,6 +56,7 @@ const CardDisplay: React.FC<HomeProps> = ({
 
   useEffect(() => {
     if (searchValue === "" || salonId === "000000000000000000000000") {
+      console.log("Empty HERE!");
       setSearchData([]);
       setPage(1);
       if (searchBarRef.current) {
@@ -64,17 +66,19 @@ const CardDisplay: React.FC<HomeProps> = ({
     }
     async function fetchData() {
       try {
+        if (searchValue === "") {
+          console.log("Empty here!");
+          return;
+        }
         const response = await axios.get(
           `${Urls.SearchingServices}?salonId=${salonId}&name=${searchValue}&page=${page}&limit=${limit}`
         );
         if (response.data.data.services.length === 0) setHasMore(false);
         else setHasMore(true);
-        setTimeout(() => {
-          setSearchData((prev: any[]) => [
-            ...prev,
-            ...response.data.data.services,
-          ]);
-        }, 200);
+        setSearchData((prev: any[]) => [
+          ...prev,
+          ...response.data.data.services,
+        ]);
       } catch (err) {
         console.log(err);
       }
@@ -93,20 +97,19 @@ const CardDisplay: React.FC<HomeProps> = ({
     }
     async function fetchDataProducts() {
       try {
+        if (searchValueProducts === "") return;
         setType("product");
         const response = await axios.get(
           `${Urls.GetProducts}?salon=${salonId}&name=${searchValueProducts}&page=${pageProducts}&limit=${limit}`
         );
         if (response.data.products.length === 0) setHasMoreProducts(false);
         else setHasMoreProducts(true);
-        setTimeout(() => {
-          if(hasMoreProducts){
-            setSearchDataProducts((prev: any[]) => [
-              ...prev,
-              ...response.data.products,
-            ]);
-          }
-        }, 200);
+        if (hasMoreProducts) {
+          setSearchDataProducts((prev: any[]) => [
+            ...prev,
+            ...response.data.products,
+          ]);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -115,7 +118,10 @@ const CardDisplay: React.FC<HomeProps> = ({
   }, [pageProducts, salonId, searchValueProducts]);
 
   useEffect(() => {
-    if (searchValueMembership === "" || salonId === "000000000000000000000000") {
+    if (
+      searchValueMembership === "" ||
+      salonId === "000000000000000000000000"
+    ) {
       setSearchDataMembership([]);
       setPageMembership(1);
       if (searchBarMembershipRef.current) {
@@ -125,20 +131,20 @@ const CardDisplay: React.FC<HomeProps> = ({
     }
     async function fetchDataMembership() {
       try {
+        if (searchValueMembership === "") return;
         setType("membership");
         const response = await axios.get(
           `${Urls.GetMemberships}/${salonId}?name=${searchValueMembership}&page=${pageMembership}&limit=${limit}&response_type=search`
         );
-        if (response.data.data.memberships.length === 0) setHasMoreMembership(false);
+        if (response.data.data.memberships.length === 0)
+          setHasMoreMembership(false);
         else setHasMoreMembership(true);
-        setTimeout(() => {
-          if(hasMoreMembership){
-            setSearchDataMembership((prev: any[]) => [
-              ...prev,
-              ...response.data.data.memberships,
-            ]);
-          }
-        }, 200);
+        if (hasMoreMembership) {
+          setSearchDataMembership((prev: any[]) => [
+            ...prev,
+            ...response.data.data.memberships,
+          ]);
+        }
       } catch (err) {
         console.log(err);
       }
