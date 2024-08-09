@@ -101,7 +101,9 @@ const SearchResults = ({
           category: data.category,
           productsUsed: data.productsUsed,
           variables: data.variables,
+          type: "service",
         });
+        setType("service");
         setOpenVariablesTable(true);
         return true;
       }

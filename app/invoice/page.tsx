@@ -21,7 +21,7 @@ const Page = () => {
     }, [bookingId])
   return (
     <>
-      <div className="invoice-wrapper w-screen h-screen flex justify-center items-center">
+      <div className="invoice-wrapper w-fit h-screen">
           <Invoice booking={booking} invoice={encryptedBookingId}/>
       </div>
     </>

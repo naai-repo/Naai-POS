@@ -53,6 +53,7 @@ const DropDownMenu = ({
   }, [customer, setShowDropDown]);
 
   const handleClick = (customer: CustomerInfoInterface) => {
+    console.log("CUSTOMER: ", customer?.membership?.salonId);
     let dues = customer.dues;
     if (customer.dues.length > 0) {
       dues = dues.filter(
@@ -60,6 +61,7 @@ const DropDownMenu = ({
       );
     }
     let membership = customer.membership;
+    console.log("MEMBERSHIP: ", membership);
     if (
       customer?.membership?.salonId?.toString() !== SALONID.toString()
     ) {

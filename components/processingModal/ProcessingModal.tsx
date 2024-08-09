@@ -624,7 +624,7 @@ const ProcessingModal = ({
                       <DisplayInfoWithInbox
                         title="Payment Type: "
                         dropDown={true}
-                        options={["Cash", "Wallet", "UPI"]}
+                        options={["Cash", "Wallet", "UPI", "PhonePe", "Paytm", "Google Pay"]}
                         setState={setPaymentMethod}
                       />
                       <Button
